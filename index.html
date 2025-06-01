@@ -3,902 +3,426 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Professional Poker Game</title>
+    <title>Advanced Pixel Platformer (Revised Fix)</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            background: linear-gradient(135deg, #0a3d2e, #1a5c4a, #0f4c3a);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: white;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        .container {
-            max-width: 1600px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        .game-header {
-            text-align: center;
-            margin-bottom: 30px;
-            position: relative;
-        }
-
-        .game-header h1 {
-            font-size: 3rem;
-            margin-bottom: 10px;
-            text-shadow: 3px 3px 6px rgba(0,0,0,0.7);
-            background: linear-gradient(45deg, #ffd700, #ffed4e);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .connection-status {
-            padding: 15px 25px;
-            border-radius: 12px;
-            margin-bottom: 25px;
-            text-align: center;
-            font-weight: bold;
-            backdrop-filter: blur(10px);
-            border: 2px solid;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-        }
-
-        .status-host {
-            background: linear-gradient(45deg, rgba(45, 90, 39, 0.8), rgba(74, 157, 63, 0.6));
-            border-color: #4a9d3f;
-            color: #90ee90;
-        }
-
-        .status-connected {
-            background: linear-gradient(45deg, rgba(31, 77, 58, 0.8), rgba(58, 143, 95, 0.6));
-            border-color: #3a8f5f;
-            color: #98fb98;
-        }
-
-        .status-disconnected {
-            background: linear-gradient(45deg, rgba(90, 39, 39, 0.8), rgba(157, 63, 63, 0.6));
-            border-color: #9d3f3f;
-            color: #ff6b6b;
-        }
-        .status-action-required {
-             background: linear-gradient(45deg, rgba(245, 158, 11, 0.8), rgba(251, 191, 36, 0.6));
-            border-color: #f59e0b;
-            color: #fffbeb;
-        }
-
-
-        .setup-panel {
-            background: linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.05));
-            border-radius: 20px;
-            padding: 40px;
-            margin-bottom: 30px;
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(255,255,255,0.2);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
-        }
-
-        .input-group {
-            margin-bottom: 25px;
-        }
-
-        .input-group label {
-            display: block;
-            margin-bottom: 10px;
-            font-weight: 600;
-            font-size: 1.1rem;
-            color: #e0e0e0;
-        }
-
-        .input-group input {
-            width: 100%;
-            padding: 15px 20px;
-            border-radius: 12px;
-            border: 2px solid rgba(255,255,255,0.2);
-            background: rgba(255,255,255,0.95);
-            color: #333;
-            font-size: 16px;
-            transition: all 0.3s ease;
-        }
-
-        .input-group input:focus {
-            outline: none;
-            border-color: #4a9d3f;
-            box-shadow: 0 0 20px rgba(74, 157, 63, 0.3);
-        }
-
-        .btn {
-            padding: 15px 30px;
-            border: none;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin: 8px;
-            position: relative;
-            overflow: hidden;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        .btn.disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: left 0.5s;
-        }
-
-        .btn:not(.disabled):hover::before {
-            left: 100%;
-        }
-
-        .btn-primary {
-            background: linear-gradient(45deg, #4a9d3f, #5fb354, #4a9d3f);
-            color: white;
-            box-shadow: 0 6px 20px rgba(74, 157, 63, 0.4);
-        }
-
-        .btn-primary:not(.disabled):hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 25px rgba(74, 157, 63, 0.6);
-        }
-         .btn-success { /* For Start Game button */
-            background: linear-gradient(45deg, #16a34a, #22c55e, #16a34a);
-            color: white;
-            box-shadow: 0 6px 20px rgba(22, 163, 74, 0.4);
-        }
-        .btn-success:not(.disabled):hover {
-             transform: translateY(-3px);
-            box-shadow: 0 12px 25px rgba(22, 163, 74, 0.6);
-        }
-
-
-        .btn-secondary {
-            background: linear-gradient(45deg, #6c757d, #868e96, #6c757d);
-            color: white;
-            box-shadow: 0 6px 20px rgba(108, 117, 125, 0.4);
-        }
-
-        .btn-danger {
-            background: linear-gradient(45deg, #dc3545, #e85463, #dc3545);
-            color: white;
-            box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
-        }
-
-        .btn-info {
-            background: linear-gradient(45deg, #17a2b8, #20c997, #17a2b8);
-            color: white;
-            box-shadow: 0 6px 20px rgba(23, 162, 184, 0.4);
-        }
-
-        .btn-warning {
-            background: linear-gradient(45deg, #ffc107, #ffed4e, #ffc107);
-            color: #333;
-            box-shadow: 0 6px 20px rgba(255, 193, 7, 0.4);
-        }
-
-        .game-layout {
-            display: grid;
-            grid-template-columns: 1fr 400px;
-            gap: 30px;
-            align-items: start;
-        }
-
-        .main-game {
-            display: flex;
-            flex-direction: column;
-            gap: 25px;
-        }
-
-        .poker-table {
-            background: radial-gradient(ellipse at center, #0d3d2a 0%, #063025 70%, #041f1a 100%);
-            border-radius: 50%;
-            width: 100%;
-            max-width: 800px;
-            height: 500px;
-            margin: 0 auto;
-            position: relative;
-            border: 12px solid #8b4513;
-            box-shadow: 
-                inset 0 0 50px rgba(0,0,0,0.5),
-                0 20px 40px rgba(0,0,0,0.4);
-        }
-
-        .community-cards {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            display: flex;
-            gap: 12px;
-            padding: 15px;
-            background: rgba(0,0,0,0.2);
-            border-radius: 15px;
-            border: 2px solid rgba(255,255,255,0.1);
-        }
-        .community-cards .card:empty { /* Style for placeholder cards */
-            background: rgba(255,255,255,0.1);
-            border: 2px dashed rgba(255,255,255,0.2);
-        }
-
-
-        .card {
-            width: 70px;
-            height: 100px;
-            background: linear-gradient(145deg, #ffffff, #f0f0f0);
-            border-radius: 10px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            align-items: center; 
-            padding: 8px;
-            color: black;
-            font-weight: bold;
-            font-size: 16px;
-            border: 3px solid #333;
-            transition: all 0.4s ease;
-            position: relative;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-        }
-
-        .card.red { color: #dc2626; }
-        .card.black { color: #1f2937; }
-        .card .suit { font-size: 24px; }
-        .card .rank { font-size: 20px; }
-        .card .top-left { position: absolute; top: 5px; left: 8px; text-align: center; }
-        .card .bottom-right { position: absolute; bottom: 5px; right: 8px; transform: rotate(180deg); text-align: center; }
-
-        .card.highlighted {
-            border-color: #059669;
-            box-shadow: 0 0 25px rgba(5, 150, 105, 0.8), 0 0 50px rgba(5, 150, 105, 0.4);
-            background: linear-gradient(145deg, #f0fdf4, #dcfce7);
-            transform: scale(1.05);
-        }
-        .card.winning { /* ... existing styles ... */ animation: winPulse 2s infinite; }
-        @keyframes winPulse { 0%, 100% { transform: scale(1.05); } 50% { transform: scale(1.1); } }
-
-        .card-back {
-            background: linear-gradient(45deg, #1e3a8a, #3b82f6, #1e40af);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 28px;
-        }
-        .card-back .card-design { 
-            width: 80%; height: 90%; border: 2px solid rgba(255,255,255,0.5); border-radius: 5px;
-            background: repeating-linear-gradient( 45deg, rgba(255,255,255,0.1), rgba(255,255,255,0.1) 5px, transparent 5px, transparent 10px );
-        }
-
-        .player-seats { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
-        .player-seat {
-            position: absolute; width: 140px; min-height: 110px;
-            background: linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.05));
-            border-radius: 15px; padding: 10px; text-align: center;
-            border: 2px solid transparent; backdrop-filter: blur(10px); transition: all 0.3s ease;
-        }
-        .player-seat.open-seat { cursor: pointer; border-color: #4ade80; }
-        .player-seat.open-seat:hover { border-color: #ffd700; background: rgba(255,255,255,0.2); }
-
-
-        .player-seat.active {
-            border-color: #ffd700;
-            box-shadow: 0 0 25px rgba(255, 215, 0, 0.8), inset 0 0 20px rgba(255, 215, 0, 0.2);
-            transform: scale(1.05);
-        }
-        .player-seat.dealer::after {
-            content: 'D'; position: absolute; top: -10px; right: -10px; background-color: #ef4444;
-            color: white; width: 20px; height: 20px; border-radius: 50%; display: flex;
-            align-items: center; justify-content: center; font-size: 12px; font-weight: bold;
-            box-shadow: 0 0 10px rgba(239, 68, 68, 0.8);
-        }
-
-        .seat-1 { top: -65px; left: 50%; transform: translateX(-50%); } 
-        .seat-2 { top: 50%; left: -120px; transform: translateY(-50%); } 
-        .seat-3 { top: -65px; left: calc(50% - 160px); transform: translateX(-50%); } 
-        .seat-4 { top: 50%; right: -120px; transform: translateY(-50%); } 
-        .seat-5 { top: -65px; left: calc(50% + 160px); transform: translateX(-50%); } 
-        .seat-6 { bottom: -65px; left: 50%; transform: translateX(-50%); } 
-
-        .player-info { margin-bottom: 8px; }
-        .player-name {
-            font-size: 14px; font-weight: bold; margin-bottom: 4px; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-        }
-        .player-chips { font-size: 13px; color: #ffd700; font-weight: 600; }
-        .player-cards { display: flex; gap: 6px; justify-content: center; margin-top: 8px; height: 50px; }
-        .player-cards .card { 
-            width: 40px; height: 58px; font-size: 8px; padding: 2px; border-width: 2px;
-        }
-        .player-cards .card .suit { font-size: 14px; }
-        .player-cards .card .rank { font-size: 12px; }
-        .player-cards .card .top-left { top: 2px; left: 3px;}
-        .player-cards .card .bottom-right { bottom: 2px; right: 3px;}
-
-        .sidebar { display: flex; flex-direction: column; gap: 25px; }
-        .hand-analyzer { /* ... existing styles ... */ }
-        .current-hand { /* ... existing styles ... */ }
-        .hand-strength, .hand-cards, .hand-probability { /* ... existing styles ... */ }
-        .potential-hands, .potential-item, .potential-name, .potential-chance { /* ... existing styles ... */ }
-        .outs-info { /* ... existing styles ... */ }
-
-        .game-controls { /* ... existing styles ... */ }
-        .bet-controls { /* ... existing styles ... */ }
-        .bet-amount-control { /* ... existing styles ... */ }
-        .bet-slider { /* ... existing styles ... */ }
-        .bet-slider::-webkit-slider-thumb { /* ... existing styles ... */ }
-        .bet-slider::-moz-range-thumb { /* ... existing styles ... */ }
-
-        .game-info { /* ... existing styles ... */ }
-        .info-item, .info-label, .info-value { /* ... existing styles ... */ }
-        .player-list { /* ... existing styles ... */ }
-        .player-item { /* ... existing styles ... */ }
-        .chat-area { /* ... existing styles ... */ }
-        .chat-messages { /* ... existing styles ... */ }
-        .chat-message, .chat-message .sender, .chat-message .text { /* ... existing styles ... */ }
-        .chat-input, .chat-input input, .chat-input button { /* ... existing styles ... */ }
-
-        .hidden { display: none !important; }
-        .help-modal { /* ... existing styles ... */ }
-        .help-content, .help-content .close-btn, .help-content h2, .help-section, .help-section h3 { /* ... existing styles ... */ }
-        .hand-ranking, .hand-ranking-name, .hand-ranking-example { /* ... existing styles ... */ }
-        .probability-bar, .probability-fill { /* ... existing styles ... */ }
-
-        @media (max-width: 1200px) { /* ... existing styles ... */ }
-        @media (max-width: 768px) { /* ... existing styles ... */ }
-        @media (max-width: 480px) { /* ... existing styles ... */ }
+        body { margin: 0; padding: 0; background: linear-gradient(135deg, #0f0f23, #1a1a2e, #16213e); display: flex; justify-content: center; align-items: center; min-height: 100vh; font-family: 'Courier New', monospace; overflow: hidden; }
+        #gameContainer { text-align: center; background: rgba(0, 0, 0, 0.9); padding: 20px; border-radius: 15px; box-shadow: 0 0 50px rgba(0, 255, 255, 0.4), inset 0 0 20px rgba(255, 255, 255, 0.1); border: 2px solid rgba(0, 255, 255, 0.3); }
+        canvas { border: 3px solid #00ffff; border-radius: 8px; image-rendering: pixelated; background: linear-gradient(to bottom, #4facfe 0%, #00f2fe 40%, #43e97b 60%, #38f9d7 100%); box-shadow: 0 0 30px rgba(0, 255, 255, 0.3); }
+        .ui { color: #00ffff; margin: 15px 0; font-size: 20px; text-shadow: 0 0 15px rgba(0, 255, 255, 0.8); font-weight: bold; }
+        .controls { color: #ffffff; font-size: 14px; margin: 15px 0; opacity: 0.9; line-height: 1.6; }
+        .enemy-info { color: #ffffff; font-size: 12px; margin: 10px 0; text-align: left; display: inline-block; background: rgba(255, 255, 255, 0.1); padding: 10px; border-radius: 8px; }
+        button { background: linear-gradient(45deg, #ff6b6b, #ee5a24, #fd79a8); color: white; border: none; padding: 12px 24px; font-size: 16px; border-radius: 8px; cursor: pointer; margin: 8px; font-family: 'Courier New', monospace; font-weight: bold; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4); transition: all 0.3s ease; text-transform: uppercase; }
+        button:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5); background: linear-gradient(45deg, #fd79a8, #ff6b6b, #ee5a24); }
+        button:active { transform: translateY(-1px); }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="game-header">
-            <h1>🃏 Professional Poker Night</h1>
-            <div id="connectionStatus" class="connection-status status-disconnected">
-                Not Connected
-            </div>
-        </div>
-
-        <div id="setupPanel" class="setup-panel">
-            <div class="input-group">
-                <label for="playerName">🎭 Your Name:</label>
-                <input type="text" id="playerName" placeholder="Enter your poker name" maxlength="20">
-            </div>
-            <div class="input-group">
-                <label for="roomCode">🔐 Room Code (leave empty to host):</label>
-                <input type="text" id="roomCode" placeholder="Enter room code to join, or leave empty to host">
-            </div>
-            <div style="text-align: center;">
-                <button class="btn btn-primary" onclick="joinOrHostGame()">🎮 Enter Game</button>
-                <button class="btn btn-info" onclick="showHelp()">📖 Help & Rules</button>
-            </div>
-            <div id="hostInfo" class="hidden" style="margin-top: 25px; text-align: center; padding: 25px; background: linear-gradient(135deg, rgba(74, 157, 63, 0.3), rgba(74, 157, 63, 0.1)); border-radius: 15px; border: 2px solid #4a9d3f;">
-                <h3>🎯 You are hosting!</h3>
-                <p>Share this room code with your friends:</p>
-                <h2 id="roomCodeDisplay" style="color: #ffd700; margin: 15px 0; font-size: 2.5rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);"></h2>
-                <p>Players can join by entering this code</p>
-            </div>
-        </div>
-
-        <div id="gameArea" class="hidden">
-            <div class="game-layout">
-                <div class="main-game">
-                    <div class="poker-table" id="pokerTable">
-                        <div class="community-cards" id="communityCards">
-                            <div class="card"></div> <div class="card"></div> <div class="card"></div> <div class="card"></div> <div class="card"></div>
-                        </div>
-                        <div class="player-seats" id="playerSeats">
-                            </div>
-                    </div>
-                    <div class="game-info">
-                        <div class="info-item"><div class="info-label">💰 Pot</div><div class="info-value" id="potAmount">$0</div></div>
-                        <div class="info-item"><div class="info-label">🎯 Your Chips</div><div class="info-value" id="playerChipsDisplay">$0</div></div>
-                        <div class="info-item"><div class="info-label">💵 Current Bet</div><div class="info-value" id="currentBetDisplay">$0</div></div>
-                        <div class="info-item"><div class="info-label">🎲 Round</div><div class="info-value" id="gameRoundDisplay">Waiting...</div></div>
-                    </div>
-                    <div class="game-controls" id="gameControls">
-                         <button id="startGameButton" class="btn btn-success hidden" onclick="startGame()">🚀 Start New Hand</button>
-                        <div class="bet-controls">
-                            <button class="btn btn-danger" onclick="fold()">❌ Fold</button>
-                            <button class="btn btn-secondary" onclick="checkCall()">✅ Check/Call</button>
-                            <button class="btn btn-primary" onclick="raise()">📈 Raise</button>
-                            <button class="btn btn-warning" onclick="allIn()">🔥 All In</button>
-                            <button class="btn btn-info" onclick="showHelp()">❓ Help</button>
-                        </div>
-                        <div class="bet-amount-control">
-                            <span style="font-weight: 600;">💰 Bet Amount:</span>
-                            <input type="range" id="betSlider" class="bet-slider" min="0" max="1000" value="0">
-                            <span id="betAmountDisplay" style="font-weight: bold; color: #ffd700; font-size: 18px;">$0</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="sidebar">
-                    <div class="hand-analyzer">
-                        <h3>🎯 Advanced Hand Analysis</h3>
-                        <div class="current-hand">
-                            <div class="hand-strength" id="handStrength">Waiting for hand</div>
-                            <div class="hand-cards" id="handCardsInfo"></div>
-                            <div class="hand-probability" id="handProbability">Strength: --%</div>
-                            <div class="probability-bar"><div class="probability-fill" id="probabilityFill" style="width: 0%;"></div></div>
-                        </div>
-                        <div class="potential-hands"><h4>🎲 Potential Hands</h4><div id="potentialHandsList"><div class="potential-item"><span class="potential-name">N/A</span><span class="potential-chance">--%</span></div></div></div>
-                        <div class="outs-info"><h4>📊 Outs & Odds</h4><div id="outsInfoDisplay">N/A</div></div>
-                    </div>
-                    <div class="player-list"><h3>👥 Players in Room</h3><div id="playerListContainer"><div class="player-item"><span class="player-name">Waiting for players...</span></div></div></div>
-                    <div class="chat-area">
-                        <h3>💬 Game Chat</h3>
-                        <div class="chat-messages" id="chatMessages">
-                            <div class="chat-message"><span class="sender system">System:</span> <span class="text">Welcome to Poker Night! Enter your name and join or host a game.</span></div>
-                        </div>
-                        <div class="chat-input">
-                            <input type="text" id="chatInput" placeholder="Type your message...">
-                            <button class="btn btn-primary" onclick="sendChatMessage()">Send</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div id="gameContainer">
+        <div class="ui"> Lives: <span id="lives">3</span> | Level: <span id="level">1</span> | Score: <span id="score">0</span> </div>
+        <canvas id="gameCanvas" width="1000" height="600"></canvas>
+        <div class="controls"> <strong>CONTROLS:</strong> Arrow Keys or WASD to move • Space/Up to jump </div>
+        <div class="enemy-info"> <strong>ENEMIES:</strong><br> 🔴 Red Chaser - Smart AI that hunts you down<br> 🟠 Orange Shooter - Fires deadly projectiles<br> 🟣 Purple Spiker - Instant death on contact<br> 🔵 Blue Jumper - Leaps across platforms to reach you </div>
+        <div> <button onclick="generateNewLevelButton()">🎲 New Level</button> <button onclick="resetGame()">🔄 Reset Game</button> </div>
     </div>
 
-    <div id="helpModal" class="help-modal hidden">
-        <div class="help-content">
-            <button class="close-btn" onclick="hideHelp()">×</button>
-            <h2>📖 Poker Game Help & Rules</h2>
-            <div class="help-section"><h3>Basic Gameplay</h3><p>This is a Texas Hold'em Poker game...</p></div>
-            <div class="help-section"><h3>Betting Rounds</h3><ul><li><strong>Pre-flop:</strong>...</li></ul><p>...</p></div>
-            <div class="help-section"><h3>Hand Rankings (Highest to Lowest)</h3><div class="hand-ranking">...</div></div>
-            <div style="text-align: center; margin-top: 30px;"><button class="btn btn-secondary" onclick="hideHelp()">Close Help</button></div>
-        </div>
-    </div>
-
-<script>
-    // DOM Elements
-    const setupPanel = document.getElementById('setupPanel');
-    const gameArea = document.getElementById('gameArea');
-    const playerNameInput = document.getElementById('playerName');
-    const roomCodeInput = document.getElementById('roomCode');
-    const connectionStatus = document.getElementById('connectionStatus');
-    const hostInfo = document.getElementById('hostInfo');
-    const roomCodeDisplay = document.getElementById('roomCodeDisplay');
-    const helpModal = document.getElementById('helpModal');
-    const betSlider = document.getElementById('betSlider');
-    const betAmountDisplay = document.getElementById('betAmountDisplay');
-    const playerChipsDisplay = document.getElementById('playerChipsDisplay');
-    const potAmountDisplay = document.getElementById('potAmount');
-    const currentBetDisplay = document.getElementById('currentBetDisplay');
-    const gameRoundDisplay = document.getElementById('gameRoundDisplay');
-    const chatMessagesContainer = document.getElementById('chatMessages'); // Renamed for clarity
-    const chatInput = document.getElementById('chatInput');
-    const playerSeatsContainer = document.getElementById('playerSeats');
-    const communityCardsContainer = document.getElementById('communityCards');
-    const startGameButton = document.getElementById('startGameButton');
-    const playerListContainer = document.getElementById('playerListContainer');
-
-
-    // Game State
-    let clientPlayerName = ''; // Name of the person using this browser
-    let clientPlayerSeatIndex = -1; // Seat index of this client
-    let currentRoomCode = '';
-    let gamePlayers = []; // Array to hold player objects for all seats
-    const MAX_PLAYERS = 6;
-    let deck = [];
-    let communityCardsOnBoard = [];
-    let currentPotAmount = 0;
-    let currentBetValue = 0; // Highest bet amount to call in current round
-    let currentRoundName = 'Waiting...';
-    let dealerSeatIndex = -1; // Who is the dealer
-    let clientHasJoinedSeat = false;
-
-    const SUITS = ['♥', '♦', '♣', '♠']; // Hearts, Diamonds, Clubs, Spades
-    const RANKS = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
-
-    // Initialize players array with nulls for empty seats
-    for (let i = 0; i < MAX_PLAYERS; i++) gamePlayers[i] = null;
-
-    function joinOrHostGame() {
-        clientPlayerName = playerNameInput.value.trim();
-        if (!clientPlayerName) {
-            alert("Please enter your poker name!");
-            return;
-        }
-        clientHasJoinedSeat = false; // Reset seat selection status for new game entry
-
-        const roomCodeInputValue = roomCodeInput.value.trim().toUpperCase();
-        let isHosting = false;
-
-        if (roomCodeInputValue === "") {
-            isHosting = true;
-            currentRoomCode = clientPlayerName.toUpperCase().substring(0, 4) + Math.floor(100 + Math.random() * 900);
-            roomCodeDisplay.textContent = currentRoomCode;
-            hostInfo.classList.remove('hidden');
-            connectionStatus.textContent = `Hosting Game: ${currentRoomCode}. Select an open seat.`;
-            connectionStatus.className = 'connection-status status-host';
-            addChatMessage("System", `${clientPlayerName} is hosting room ${currentRoomCode}.`);
-        } else {
-            currentRoomCode = roomCodeInputValue;
-            connectionStatus.textContent = `Joining Room: ${currentRoomCode}. Select an open seat.`;
-            connectionStatus.className = 'connection-status status-connected'; // Optimistic
-            addChatMessage("System", `${clientPlayerName} is attempting to join room ${currentRoomCode}.`);
-            // In a real app, this would involve server communication
-        }
-
-        setupPanel.classList.add('hidden');
-        gameArea.classList.remove('hidden');
-        gameRoundDisplay.textContent = "Select Seat";
-        renderPlayerSeats(); // Render seats, making them selectable
-        updatePlayerChipsDisplay(); // Update based on client's potential chips
-        updateGameInfoDisplays();
-        updatePlayerList();
-    }
-
-    function selectSeat(seatIndex) {
-        if (clientHasJoinedSeat) {
-            addChatMessage("System", "You have already selected a seat.");
-            return;
-        }
-        if (gamePlayers[seatIndex]) {
-            addChatMessage("System", "This seat is already taken.");
-            return;
-        }
-
-        const newPlayer = {
-            name: clientPlayerName,
-            chips: 1000, // Default starting chips
-            cards: [],
-            seatIndex: seatIndex,
-            isActiveInHand: false, // Will be set true when hand starts
-            isDealer: false,
-            currentBetInRound: 0,
-            isFolded: false,
-            isClient: true // Mark this player as the one using this browser
-        };
-        gamePlayers[seatIndex] = newPlayer;
-        clientPlayerSeatIndex = seatIndex;
-        clientHasJoinedSeat = true;
-
-        if (dealerSeatIndex === -1) { // First player to join becomes dealer
-            dealerSeatIndex = seatIndex;
-            gamePlayers[seatIndex].isDealer = true;
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        let gameState = { lives: 3, level: 1, score: 0, gameOver: false, won: false, camera: { x: 0, y: 0 } };
+        const player = { x: 100, y: 450, width: 20, height: 20, velX: 0, velY: 0, speed: 1, maxSpeed: 2.5, jumpPower: 20, onGround: false, acceleration: 0.1, friction: 0.82, color: '#ff3742', facing: 1, animFrame: 0, invulnerable: 0 };
+        
+        let platforms = [], enemies = [], projectiles = [], particles = [], collectibles = [], flag = null;
+        const keys = {};
+        document.addEventListener('keydown', (e) => { keys[e.key.toLowerCase()] = true; if (e.key === ' ') e.preventDefault(); });
+        document.addEventListener('keyup', (e) => { keys[e.key.toLowerCase()] = false; });
+        
+        class Platform { /* ... No changes from previous response ... */ 
+            constructor(x, y, width, height, type = 'normal') { this.x = x; this.y = y; this.width = width; this.height = height; this.type = type; this.originalX = x; this.moveSpeed = 1 + Math.random(); this.moveRange = 80 + Math.random() * 60; this.direction = Math.random() > 0.5 ? 1 : -1; this.color = this.getColor(); this.isCrumbling = false; this.crumbleTimer = null; }
+            getColor() { switch(this.type) { case 'moving': return '#6c5ce7'; case 'crumbling': return '#fd79a8'; case 'ice': return '#74b9ff'; default: return '#2d3436'; } }
+            update() { if (this.type === 'moving') { this.x += this.moveSpeed * this.direction; if (Math.abs(this.x - this.originalX) > this.moveRange) { this.direction *= -1; this.x = this.originalX + this.moveRange * this.direction; } } }
+            startCrumble() { if (this.type === 'crumbling' && !this.isCrumbling) { this.isCrumbling = true; this.color = 'rgba(253, 121, 168, 0.5)'; this.crumbleTimer = setTimeout(() => { const index = platforms.indexOf(this); if (index > -1) { for(let i = 0; i < 20; i++) { particles.push(new Particle(this.x + Math.random()*this.width, this.y + Math.random()*this.height, '#fd79a8')); } platforms.splice(index, 1); } }, 300); } }
+            draw() { ctx.fillStyle = 'rgba(0, 0, 0, 0.3)'; ctx.fillRect(this.x + 3, this.y + 3, this.width, this.height); ctx.fillStyle = this.color; ctx.fillRect(this.x, this.y, this.width, this.height); const surfaceColor = this.type === 'moving' ? '#a29bfe' : this.type === 'ice' ? '#81ecec' : this.type === 'crumbling' && this.isCrumbling ? 'rgba(253,121,168,0.2)' : this.type === 'crumbling' ? '#fab1a0' : '#00b894'; ctx.fillStyle = surfaceColor; ctx.fillRect(this.x, this.y, this.width, 6); ctx.fillStyle = 'rgba(255, 255, 255, 0.4)'; ctx.fillRect(this.x + 2, this.y + 2, this.width - 4, 3); if (this.type === 'ice') { ctx.fillStyle = 'rgba(255,255,255,0.6)'; for(let i=0;i<this.width; i+=10) ctx.fillRect(this.x+i, this.y+1,2,1); } }
         }
         
-        connectionStatus.textContent = `You are ${clientPlayerName} in Seat ${seatIndex + 1}. Room: ${currentRoomCode}`;
-        connectionStatus.className = 'connection-status status-connected';
-        addChatMessage("System", `${clientPlayerName} has taken Seat ${seatIndex + 1}.`);
-        
-        renderPlayerSeats(); // Re-render to show player in seat and disable further selection for this client
-        updatePlayerChipsDisplay();
-        updatePlayerList();
-        checkCanStartGame();
-    }
-    
-    function checkCanStartGame() {
-        const seatedPlayersCount = gamePlayers.filter(p => p !== null).length;
-        if (seatedPlayersCount >= 2 && clientPlayerSeatIndex !== -1 && gamePlayers[clientPlayerSeatIndex]?.isDealer) {
-            startGameButton.classList.remove('hidden');
-            addChatMessage("System", "Ready to start a new hand when you are, Dealer!");
-        } else {
-            startGameButton.classList.add('hidden');
-        }
-    }
-
-    function addPlayer(name, chips, seatIdx, isThisClient = false) { // Keep for potential external adds (though not fully used without server)
-        if (seatIdx < 0 || seatIdx >= MAX_PLAYERS || gamePlayers[seatIdx]) return; // Invalid or taken
-        gamePlayers[seatIdx] = {
-            name, chips, cards: [], seatIndex: seatIdx, isActiveInHand: false, isDealer: false,
-            currentBetInRound: 0, isFolded: false, isClient: isThisClient
-        };
-        updatePlayerList();
-        renderPlayerSeats();
-        checkCanStartGame();
-    }
-
-    function updatePlayerList() {
-        playerListContainer.innerHTML = '';
-        let hasPlayers = false;
-        gamePlayers.forEach(player => {
-            if (player) {
-                hasPlayers = true;
-                const item = document.createElement('div');
-                item.className = 'player-item';
-                item.innerHTML = `<span class="player-name">${player.name} (Seat ${player.seatIndex + 1}) ${player.isDealer ? ' D' : ''}</span> <span class="player-chips">$${player.chips}</span>`;
-                playerListContainer.appendChild(item);
+        class Enemy {
+            constructor(x, y, type) { /* ... constructor same ... */ 
+                this.x = x; this.y = y; this.startX = x; this.startY = y; this.width = 18; this.height = 18; this.type = type; this.velX = 0; this.velY = 0; this.onGround = false; this.health = 1; this.lastAction = 0; this.detectionRange = 250; this.state = 'patrol'; this.patrolDirection = Math.random() > 0.5 ? 1 : -1; this.animFrame = Math.random() * 10;
+                this.setupByType();
             }
-        });
-        if (!hasPlayers) {
-            playerListContainer.innerHTML = `<div class="player-item"><span class="player-name">Waiting for players...</span></div>`;
-        }
-    }
-
-    function showHelp() { if (helpModal) helpModal.classList.remove('hidden'); }
-    function hideHelp() { if (helpModal) helpModal.classList.add('hidden'); }
-
-    if (betSlider && betAmountDisplay) {
-        betSlider.oninput = function() { betAmountDisplay.textContent = '$' + this.value; }
-        betAmountDisplay.textContent = '$' + betSlider.value;
-    }
-    
-    function updatePlayerChipsDisplay() {
-        if (clientPlayerSeatIndex !== -1 && gamePlayers[clientPlayerSeatIndex]) {
-            const client = gamePlayers[clientPlayerSeatIndex];
-            playerChipsDisplay.textContent = `$${client.chips}`;
-            betSlider.max = client.chips;
-            if (parseInt(betSlider.value) > client.chips) {
-                betSlider.value = client.chips;
-                betAmountDisplay.textContent = `$${betSlider.value}`;
-            }
-        } else {
-            playerChipsDisplay.textContent = '$0';
-        }
-    }
-
-    function updateGameInfoDisplays() {
-        potAmountDisplay.textContent = `$${currentPotAmount}`;
-        currentBetDisplay.textContent = `$${currentBetValue}`;
-        gameRoundDisplay.textContent = currentRoundName;
-    }
-
-    // --- Game Actions (Simplified for client-side) ---
-    function fold() {
-        if (clientPlayerSeatIndex === -1 || !gamePlayers[clientPlayerSeatIndex] || !gamePlayers[clientPlayerSeatIndex].isActiveInHand) return;
-        const player = gamePlayers[clientPlayerSeatIndex];
-        player.isFolded = true;
-        player.isActiveInHand = false;
-        addChatMessage("System", `${player.name} folds.`);
-        renderPlayerSeats(); // Update UI to show folded state (e.g., greyed out cards)
-        // In real game: advanceTurn();
-    }
-
-    function checkCall() {
-        if (clientPlayerSeatIndex === -1 || !gamePlayers[clientPlayerSeatIndex] || !gamePlayers[clientPlayerSeatIndex].isActiveInHand) return;
-        const player = gamePlayers[clientPlayerSeatIndex];
-        const amountToCall = currentBetValue - player.currentBetInRound;
-
-        if (amountToCall === 0) {
-            addChatMessage(player.name, `checks.`);
-        } else if (player.chips >= amountToCall) {
-            player.chips -= amountToCall;
-            player.currentBetInRound += amountToCall;
-            currentPotAmount += amountToCall;
-            addChatMessage(player.name, `calls $${amountToCall}.`);
-        } else { // Not enough chips to call full amount, goes all-in
-            currentPotAmount += player.chips;
-            player.currentBetInRound += player.chips;
-            addChatMessage(player.name, `calls $${player.chips} and is ALL-IN!`);
-            player.chips = 0;
-        }
-        updatePlayerChipsDisplay();
-        updateGameInfoDisplays();
-        renderPlayerSeats();
-        // In real game: player.hasActed = true; advanceTurn();
-    }
-
-    function raise() {
-        if (clientPlayerSeatIndex === -1 || !gamePlayers[clientPlayerSeatIndex] || !gamePlayers[clientPlayerSeatIndex].isActiveInHand) return;
-        const player = gamePlayers[clientPlayerSeatIndex];
-        let raiseAmountTotal = parseInt(betSlider.value); // This is the total bet player wants to make
-
-        if (raiseAmountTotal <= currentBetValue) {
-            alert("Raise amount must bring total bet above current highest bet."); return;
-        }
-        if (raiseAmountTotal > player.chips) {
-            alert("You cannot bet more chips than you have. Go All-In instead."); return;
-        }
-        
-        let amountAddedToPot = raiseAmountTotal - player.currentBetInRound;
-        player.chips -= amountAddedToPot;
-        currentPotAmount += amountAddedToPot;
-        player.currentBetInRound = raiseAmountTotal;
-        currentBetValue = raiseAmountTotal; // New current bet for others to call/raise
-
-        addChatMessage(player.name, `raises to $${raiseAmountTotal}.`);
-        updatePlayerChipsDisplay();
-        updateGameInfoDisplays();
-        renderPlayerSeats();
-        // In real game: player.hasActed = true; reset other players' hasActed; advanceTurn();
-    }
-
-    function allIn() {
-        if (clientPlayerSeatIndex === -1 || !gamePlayers[clientPlayerSeatIndex] || !gamePlayers[clientPlayerSeatIndex].isActiveInHand) return;
-        const player = gamePlayers[clientPlayerSeatIndex];
-        let allInAmount = player.chips;
-        
-        player.currentBetInRound += allInAmount;
-        currentPotAmount += allInAmount;
-        player.chips = 0;
-
-        if (player.currentBetInRound > currentBetValue) {
-            currentBetValue = player.currentBetInRound; // New highest bet
-        }
-        addChatMessage(player.name, `goes ALL-IN with $${allInAmount}!`);
-        updatePlayerChipsDisplay();
-        updateGameInfoDisplays();
-        renderPlayerSeats();
-        // In real game: player.hasActed = true; advanceTurn();
-    }
-
-    function sendChatMessage() {
-        const messageText = chatInput.value.trim();
-        if (messageText && clientPlayerName) {
-            addChatMessage(clientPlayerName, messageText);
-            chatInput.value = '';
-        }
-    }
-
-    function addChatMessage(sender, text) {
-        const messageElement = document.createElement('div');
-        messageElement.classList.add('chat-message');
-        const senderSpan = document.createElement('span');
-        senderSpan.classList.add('sender');
-        senderSpan.textContent = sender + (sender.toLowerCase() === "system" ? "" : ": ");
-        const textSpan = document.createElement('span');
-        textSpan.classList.add('text');
-        textSpan.textContent = text;
-        messageElement.appendChild(senderSpan);
-        messageElement.appendChild(textSpan);
-        chatMessagesContainer.appendChild(messageElement);
-        chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
-    }
-     if (chatInput) {
-        chatInput.addEventListener('keypress', function(event) {
-            if (event.key === 'Enter') { event.preventDefault(); sendChatMessage(); }
-        });
-    }
-
-    function createDeckAndShuffle() {
-        deck = [];
-        for (const suit of SUITS) {
-            for (const rank of RANKS) { deck.push({ rank, suit, str: `${rank}${suit}` }); }
-        }
-        for (let i = deck.length - 1; i > 0; i--) { // Shuffle
-            const j = Math.floor(Math.random() * (i + 1));
-            [deck[i], deck[j]] = [deck[j], deck[i]];
-        }
-    }
-
-    function dealCardFromDeck() { return deck.pop(); }
-
-    function createCardElement(card, isBack = false) {
-        const cardDiv = document.createElement('div');
-        cardDiv.classList.add('card');
-        if (isBack) {
-            cardDiv.classList.add('card-back');
-            cardDiv.innerHTML = '<div class="card-design"></div>';
-        } else if (card) {
-            cardDiv.classList.add((card.suit === '♥' || card.suit === '♦') ? 'red' : 'black');
-            const rankSpan = document.createElement('span'); rankSpan.classList.add('rank'); rankSpan.textContent = card.rank;
-            const suitSpan = document.createElement('span'); suitSpan.classList.add('suit'); suitSpan.textContent = card.suit;
-            const topLeft = document.createElement('div'); topLeft.classList.add('top-left');
-            topLeft.appendChild(rankSpan.cloneNode(true)); topLeft.appendChild(document.createElement('br')); topLeft.appendChild(suitSpan.cloneNode(true));
-            const bottomRight = document.createElement('div'); bottomRight.classList.add('bottom-right');
-            bottomRight.appendChild(rankSpan.cloneNode(true)); bottomRight.appendChild(document.createElement('br')); bottomRight.appendChild(suitSpan.cloneNode(true));
-            cardDiv.appendChild(topLeft); cardDiv.appendChild(bottomRight);
-        }
-        return cardDiv;
-    }
-
-    function renderPlayerSeats() {
-        playerSeatsContainer.innerHTML = ''; // Clear all seats before re-rendering
-        for (let i = 0; i < MAX_PLAYERS; i++) {
-            const seatDiv = document.createElement('div');
-            seatDiv.id = `player-seat-${i}`;
-            seatDiv.classList.add('player-seat', `seat-${i + 1}`); // seat-1 to seat-6 CSS classes
-
-            const player = gamePlayers[i];
-
-            if (player) { // Player is in this seat
-                const playerInfoDiv = document.createElement('div');
-                playerInfoDiv.classList.add('player-info');
-                playerInfoDiv.innerHTML = `
-                    <div class="player-name">${player.name}</div>
-                    <div class="player-chips">$${player.chips}</div>`;
-                seatDiv.appendChild(playerInfoDiv);
-
-                const playerCardsDiv = document.createElement('div');
-                playerCardsDiv.classList.add('player-cards');
-                if (player.cards && player.cards.length > 0) {
-                    const showFaceUp = player.isClient; // Only show client's own cards face up (for now)
-                    playerCardsDiv.appendChild(createCardElement(player.cards[0], !showFaceUp));
-                    playerCardsDiv.appendChild(createCardElement(player.cards[1], !showFaceUp));
-                } else { // No cards dealt yet or player folded and cards removed
-                    playerCardsDiv.appendChild(createCardElement(null, true));
-                    playerCardsDiv.appendChild(createCardElement(null, true));
+            setupByType() { /* ... same as before ... */ 
+                switch(this.type) {
+                    case 'chaser': this.color = '#e74c3c'; this.speed = 1.8; this.jumpPower = 10; this.aggressiveness = 0.8; break;
+                    case 'shooter': this.color = '#f39c12'; this.speed = 1.2; this.shootCooldown = 1800; this.range = 300; break;
+                    case 'spiker': this.color = '#8e44ad'; this.speed = 0.8; this.deadly = true; this.spikes = []; for(let i = 0; i < 6; i++) { this.spikes.push({ offset: i * 3, height: 3 + Math.random() * 2 }); } break;
+                    case 'jumper': this.color = '#3498db'; this.speed = 1.5; this.jumpPower = 15; this.jumpCooldown = 2000; this.detectionRange = 180; break;
                 }
-                seatDiv.appendChild(playerCardsDiv);
+            }
+            distanceToPlayer() { const dx = player.x - this.x; const dy = player.y - this.y; return Math.sqrt(dx * dx + dy * dy); }
+            canSeePlayer() { const d = this.distanceToPlayer(); const hDiff = Math.abs(player.y - this.y); return d < this.detectionRange && hDiff < 100 && !gameState.gameOver; } // Added !gameState.gameOver
+            
+            update() {
+                this.animFrame += 0.1;
+                this.velY += 0.5; // Apply gravity
+                if (this.velY > 12) this.velY = 12; // Terminal velocity
 
-                if (player.isDealer) seatDiv.classList.add('dealer');
-                if (player.seatIndex === clientPlayerSeatIndex && player.isActiveInHand) seatDiv.classList.add('active'); // Highlight current client if active
-
-            } else { // Seat is open
-                seatDiv.innerHTML = `
-                    <div class="player-info"><div class="player-name">Seat Open</div></div>
-                    <div class="player-cards"></div>`;
-                seatDiv.classList.add('open-seat'); // Make it look clickable
-                if (!clientHasJoinedSeat) { // Only allow seat selection if client hasn't chosen one
-                   seatDiv.onclick = () => selectSeat(i);
+                if (this.canSeePlayer()) {
+                    this.state = 'hunting'; this.executeHuntingBehavior();
                 } else {
-                    seatDiv.onclick = null; // Disable clicking if client already has a seat
+                    this.state = 'patrol'; this.executePatrolBehavior();
+                }
+                
+                this.handlePlatformCollisions(); // Applies velocities and resolves collisions
+
+                // Apply friction AFTER collision resolution
+                if (this.onGround) { // Stronger friction on ground
+                    this.velX *= 0.90;
+                } else { // Less friction in air
+                    this.velX *= 0.97;
+                }
+                if (Math.abs(this.velX) < 0.05) this.velX = 0; // Snap to stop if very slow
+                
+                // Boundary checks
+                if (this.x < 0) { this.x = 0; this.velX = 0; if(this.state === 'patrol') this.patrolDirection = 1; }
+                if (this.x + this.width > canvas.width) { this.x = canvas.width - this.width; this.velX = 0; if(this.state === 'patrol') this.patrolDirection = -1; }
+                if (this.y > canvas.height + 50) { this.respawn(); }
+            }
+
+            handlePlatformCollisions() {
+                // --- Horizontal Collision ---
+                this.x += this.velX;
+                for (let p of platforms) {
+                    if (this.checkCollision(p)) {
+                        if (this.velX > 0) { // Moving Right, hit left side of platform
+                            this.x = p.x - this.width;
+                        } else if (this.velX < 0) { // Moving Left, hit right side of platform
+                            this.x = p.x + p.width;
+                        }
+                        if (this.state === 'patrol') { this.patrolDirection *= -1; } // Always flip patrol if hit wall
+                        this.velX = 0; // Stop horizontal movement
+                    }
+                }
+
+                // --- Vertical Collision ---
+                this.y += this.velY;
+                this.onGround = false; // Assume not on ground until collision confirms
+                for (let p of platforms) {
+                    if (this.checkCollision(p)) { // Check collision with current (new) Y
+                        if (this.velY > 0) { // Moving Down, landing on top of platform
+                            this.y = p.y - this.height;
+                            this.velY = 0;
+                            this.onGround = true;
+                            if (p.type === 'moving') { // Stick to moving platform
+                                this.x += p.moveSpeed * p.direction;
+                            }
+                        } else if (this.velY < 0) { // Moving Up, hitting bottom of platform
+                            this.y = p.y + p.height;
+                            this.velY = 0;
+                        }
+                    }
                 }
             }
-            playerSeatsContainer.appendChild(seatDiv);
-        }
-    }
 
-    function renderCommunityCards() {
-        communityCardsContainer.innerHTML = '';
-        for (let i = 0; i < 5; i++) {
-            if (communityCardsOnBoard[i]) {
-                communityCardsContainer.appendChild(createCardElement(communityCardsOnBoard[i]));
-            } else {
-                const placeholder = createCardElement(null); // Empty card slot
-                placeholder.innerHTML = ''; // Ensure it's visually empty for placeholder style
-                communityCardsContainer.appendChild(placeholder);
+            executePatrolBehavior() {
+                if (this.onGround) {
+                    let groundAhead = false;
+                    // Check slightly in front and below the direction of movement
+                    const lookDist = this.width * 0.6; // How far to look ahead from center
+                    const checkX = this.x + this.width / 2 + (this.patrolDirection * lookDist);
+                    const checkY = this.y + this.height + 1; // 1px below feet
+
+                    for (let p of platforms) {
+                        if (checkX >= p.x && checkX <= p.x + p.width && // Is the checkX point within platform's X bounds?
+                            checkY >= p.y && checkY <= p.y + p.height + 10) { // Is the checkY point on or slightly above platform's surface?
+                            groundAhead = true;
+                            break;
+                        }
+                    }
+                    if (!groundAhead) { // No ground detected ahead
+                        this.patrolDirection *= -1;
+                        this.velX = 0; // Stop before potentially falling
+                    }
+                }
+                // If on ground or has a reason to move (e.g. not blocked by cliff)
+                if(this.velX === 0 && this.onGround) { // Only add patrol velocity if not already stopped by cliff or wall
+                     this.velX += this.patrolDirection * this.speed * 0.15;
+                } else if (this.onGround) {
+                    // Maintain some patrol speed if already moving
+                    this.velX = this.patrolDirection * this.speed * 0.15;
+                }
+
+
+                // Clamp patrol speed
+                const maxPatrolSpeed = this.speed * 0.5;
+                if (this.velX > maxPatrolSpeed) this.velX = maxPatrolSpeed;
+                if (this.velX < -maxPatrolSpeed) this.velX = -maxPatrolSpeed;
+
+                // Turn around at level-defined patrol limits (originalX based)
+                if (this.onGround && (this.x <= this.startX - 60 || this.x >= this.startX + 60 )) {
+                     if((this.x <= this.startX - 60 && this.patrolDirection === -1) || (this.x >= this.startX + 60 && this.patrolDirection === 1)) {
+                        this.patrolDirection *= -1;
+                     }
+                }
+                if (this.onGround && Math.random() < 0.008 && this.type !== 'spiker') { this.velY = -this.jumpPower * 0.4; } // Occasional small hop
+            }
+            executeHuntingBehavior() { /* ... No major changes, relies on onGround & vel set by AI funcs ... */ 
+                const dx = player.x - this.x; const dy = player.y - this.y; const distance = this.distanceToPlayer();
+                switch(this.type) {
+                    case 'chaser': this.chasePlayer(dx, dy, distance); break;
+                    case 'shooter': this.shootAtPlayer(dx, dy, distance); break;
+                    case 'spiker': this.rushPlayer(dx, dy); break;
+                    case 'jumper': this.jumpAtPlayer(dx, dy, distance); break;
+                }
+            }
+            chasePlayer(dx, dy, distance) { /* ... No major changes ... */ 
+                const moveForce = this.speed * 0.05; 
+                if (Math.abs(dx) > 10) { this.velX += (dx > 0 ? moveForce : -moveForce); }
+                else {this.velX *= 0.8;} 
+                if (this.onGround && dy < -30 && Math.abs(dx) < 120 && Math.random() < 0.04) { this.velY = -this.jumpPower; }
+                if (this.onGround && Math.abs(this.velX) < 0.5 && Math.abs(dx) > 15 && Math.random() < 0.06) { this.velY = -this.jumpPower * 0.7; }
+                const maxChaseSpeed = this.speed;
+                if (this.velX > maxChaseSpeed) this.velX = maxChaseSpeed; if (this.velX < -maxChaseSpeed) this.velX = -maxChaseSpeed;
+            }
+            shootAtPlayer(dx, dy, distance) { /* ... No major changes ... */ 
+                const now = Date.now();
+                if (distance < 100) { this.velX += (dx > 0 ? -0.4 : 0.4) * this.speed * 0.1; } 
+                else if (distance > 180 && distance < this.range) { this.velX += (dx > 0 ? 0.3 : -0.3) * this.speed * 0.1; }
+                else { this.velX *= 0.7; }
+                if (now - this.lastAction > this.shootCooldown && distance < this.range && Math.abs(dy) < 60) { this.fireProjectile(dx, dy, distance); this.lastAction = now; }
+            }
+            rushPlayer(dx, dy) { /* ... No major changes ... */ 
+                const rushForce = this.speed * 0.12; this.velX += (dx > 0 ? rushForce : -rushForce);
+                if (this.onGround && dy < -15 && Math.abs(dx) < 90 && Math.random() < 0.05) { this.velY = -10; }
+                const maxRushSpeed = this.speed * 1.2;
+                if (this.velX > maxRushSpeed) this.velX = maxRushSpeed; if (this.velX < -maxRushSpeed) this.velX = -maxRushSpeed;
+            }
+            jumpAtPlayer(dx, dy, distance) { /* ... No major changes ... */
+                 const now = Date.now();
+                if (this.onGround && now - this.lastAction > this.jumpCooldown && distance < this.detectionRange && dy < 30 && Math.abs(dx) > 5) {
+                    let jumpVelXTarget = (dx / (distance || 1)) * this.speed * 1.1; 
+                    let jumpVelYTarget = -this.jumpPower * (dy < -40 ? 1.3 : 1); 
+                    this.velX = jumpVelXTarget; this.velY = jumpVelYTarget; this.lastAction = now; this.createJumpParticles();
+                } else if (this.onGround) { 
+                     if (Math.abs(dx) > 20) { this.velX += (dx > 0 ? 0.25 : -0.25) * this.speed * 0.1; } 
+                     else { this.velX *= 0.6; }
+                }
+             }
+            fireProjectile(dx, dy, distance) { /* ... No major changes ... */ 
+                const projSpeed = 4.5; 
+                const predictedPlayerX = player.x + player.velX * (distance / projSpeed) * 0.2; 
+                const predictedPlayerY = player.y + player.velY * (distance / projSpeed) * 0.2;
+                const pDx = predictedPlayerX - (this.x + this.width/2); const pDy = predictedPlayerY - (this.y + this.height/2);
+                const pDist = Math.sqrt(pDx*pDx + pDy*pDy) || 1;
+                const velX = (pDx / pDist) * projSpeed; const velY = (pDy / pDist) * projSpeed;
+                projectiles.push(new Projectile(this.x + this.width/2 - 3, this.y + this.height/2 - 3, velX, velY, 'enemy'));
+                for (let i = 0; i < 5; i++) { particles.push(new Particle(this.x + this.width/2 + velX*1.5, this.y + this.height/2 + velY*1.5, '#ff6b35')); }
+            }
+            createJumpParticles() { /* ... same ... */ }
+            checkCollision(rect) { return this.x < rect.x + rect.width && this.x + this.width > rect.x && this.y < rect.y + rect.height && this.y + this.height > rect.y; }
+            respawn() { this.x = this.startX; this.y = this.startY - 20; this.velX = 0; this.velY = 0; this.state = 'patrol'; this.health = 1; this.onGround = false;} // Ensure onGround is false on respawn
+            draw() { /* ... Previous drawing code for shadow, body ... */ 
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.2)'; ctx.beginPath(); ctx.ellipse(this.x + this.width / 2, this.y + this.height + 2, this.width / 2 * 0.8, 3, 0, 0, Math.PI * 2); ctx.fill();
+                const bounce = this.onGround ? Math.sin(this.animFrame * 0.5) * 1 : 0; const bodyY = this.y + bounce;
+                ctx.fillStyle = this.color; ctx.fillRect(this.x, bodyY, this.width, this.height);
+                ctx.fillStyle = '#ffffff'; const eyeSize = 2; const eyeYVal = bodyY + this.height * 0.25;
+                
+                // Determine facing direction more consistently for drawing
+                let facingRight;
+                if (this.state === 'hunting') {
+                    facingRight = player.x > this.x;
+                } else { // Patrol
+                    facingRight = this.patrolDirection > 0;
+                    if (Math.abs(this.velX) < 0.1 && this.velX !== 0) { // If moving very slowly but not stopped, use velX direction
+                        facingRight = this.velX > 0;
+                    }
+                }
+
+
+                switch(this.type) {
+                    case 'chaser': /* ... chaser draw (ensure facingRight is used) ... */ 
+                        const eyeX1Chaser = facingRight ? this.x + this.width * 0.6 : this.x + this.width * 0.2;
+                        const eyeX2Chaser = facingRight ? this.x + this.width * 0.25 : this.x + this.width * 0.55;
+                        ctx.fillRect(eyeX1Chaser, eyeYVal, eyeSize + 1, eyeSize + 1);
+                        ctx.fillRect(eyeX2Chaser, eyeYVal, eyeSize + 1, eyeSize + 1);
+                        ctx.fillStyle = '#ffffff'; ctx.fillRect(this.x + 5, bodyY + 12, 8, 3);
+                        ctx.fillStyle = this.color; ctx.fillRect(this.x + 6, bodyY + 13, 2, 2); ctx.fillRect(this.x + 10, bodyY + 13, 2, 2);
+                        break;
+                    case 'shooter':
+                        ctx.fillStyle = '#2c3e50'; const barrelY = bodyY + this.height * 0.4; const barrelWidth = 8;
+                        const barrelX = facingRight ? this.x + this.width : this.x - barrelWidth;
+                        ctx.fillRect(barrelX, barrelY, barrelWidth, 4);
+                        
+                        ctx.fillStyle = '#ffffff'; // Eyes for shooter
+                        const shooterEyeYPos = eyeYVal - 1;
+                        const eye1RelX_shooter = this.width * 0.60; 
+                        const eye2RelX_shooter = this.width * 0.25;
+                        if (facingRight) {
+                            ctx.fillRect(this.x + eye1RelX_shooter, shooterEyeYPos, eyeSize, eyeSize);
+                            ctx.fillRect(this.x + eye2RelX_shooter, shooterEyeYPos, eyeSize, eyeSize);
+                        } else { // Facing left
+                            ctx.fillRect(this.x + (this.width - eye1RelX_shooter) - eyeSize, shooterEyeYPos, eyeSize, eyeSize);
+                            ctx.fillRect(this.x + (this.width - eye2RelX_shooter) - eyeSize, shooterEyeYPos, eyeSize, eyeSize);
+                        }
+                        ctx.fillStyle = Date.now() - this.lastAction < this.shootCooldown ? (Math.floor(Date.now()/100)%2 ? '#e74c3c' : '#ff8c6c' ) : '#2ecc71';
+                        ctx.fillRect(this.x + 2, bodyY - 3, this.width - 4, 2);
+                        break;
+                    case 'spiker': /* ... spiker draw (ensure facingRight is used for any directional details if added) ... */ 
+                        ctx.fillStyle = '#ffffff'; 
+                        for (let spike of this.spikes) {
+                            ctx.fillRect(this.x + spike.offset, bodyY - spike.height + 1, 2, spike.height + 2); 
+                            ctx.fillRect(this.x + spike.offset, bodyY + this.height - 2, 2, spike.height); 
+                            if (spike.offset < this.width / 2) { 
+                                ctx.fillRect(this.x - spike.height + 1, bodyY + spike.offset, spike.height, 2);
+                                ctx.fillRect(this.x + this.width -2 , bodyY + spike.offset, spike.height, 2);
+                            }
+                        }
+                        ctx.fillStyle = '#ff0000'; ctx.fillRect(this.x + 4, bodyY + 6, eyeSize, eyeSize); ctx.fillRect(this.x + this.width - 6, bodyY + 6, eyeSize, eyeSize);
+                        break;
+                    case 'jumper': /* ... jumper draw (ensure facingRight is used) ... */ 
+                        ctx.fillStyle = '#bdc3c7'; 
+                        for (let i = 0; i < 3; i++) {
+                            const coilY = bodyY + this.height * (0.3 + i * 0.2);
+                            const coilHeight = this.onGround ? 2 : 1 + Math.abs(Math.sin(this.animFrame)) * 2; 
+                            ctx.fillRect(this.x + 3, coilY, this.width - 6, coilHeight);
+                        }
+                        ctx.fillStyle = '#ffffff';
+                        const eyeX1Jumper = facingRight ? this.x + this.width * 0.7 : this.x + this.width * 0.1;
+                        const eyeX2Jumper = facingRight ? this.x + this.width * 0.4 : this.x + this.width * 0.4; // This might be an error, should be different for left
+                        const eyeX2JumperFixed = facingRight ? this.x + this.width * 0.4 : this.x + this.width * 0.6 - eyeSize;
+
+                        ctx.fillRect(eyeX1Jumper, eyeYVal -2, eyeSize, eyeSize);
+                        ctx.fillRect(eyeX2JumperFixed, eyeYVal -2, eyeSize, eyeSize); // Using fixed version
+                        if (!this.onGround) { ctx.fillStyle = 'rgba(52, 152, 219, 0.5)'; ctx.fillRect(this.x + this.width/4, this.y + this.height, this.width/2, 4); }
+                        break;
+                }
+                if (this.state === 'hunting') { ctx.fillStyle = '#ff0000'; ctx.font = '15px monospace'; ctx.fillText('!', this.x + this.width / 2 - 3, this.y - 5); }
             }
         }
-    }
-    
-    function startGame() {
-        const activePlayers = gamePlayers.filter(p => p !== null);
-        if (activePlayers.length < 2) {
-            addChatMessage("System", "Need at least 2 players seated to start a hand."); return;
-        }
-        if (clientPlayerSeatIndex === -1 || !gamePlayers[clientPlayerSeatIndex]?.isDealer) {
-             addChatMessage("System", "Only the dealer can start a new hand."); return;
-        }
-
-        addChatMessage("System", "--- Starting New Hand ---");
-        currentPotAmount = 0;
-        currentBetValue = 0; // Reset (blinds would be set here in a full game)
-        currentRoundName = 'Pre-flop';
-        communityCardsOnBoard = [];
-        createDeckAndShuffle();
-
-        activePlayers.forEach(player => {
-            player.cards = [dealCardFromDeck(), dealCardFromDeck()];
-            player.isActiveInHand = true;
-            player.isFolded = false;
-            player.currentBetInRound = 0;
-        });
         
-        // For now, player to left of dealer starts betting (simplified)
-        // let firstToActIndex = (dealerSeatIndex + 1) % MAX_PLAYERS;
-        // while(!gamePlayers[firstToActIndex] || !gamePlayers[firstToActIndex].isActiveInHand) {
-        //     firstToActIndex = (firstToActIndex + 1) % MAX_PLAYERS;
-        // }
-        // addChatMessage("System", `${gamePlayers[firstToActIndex].name}'s turn to act.`);
+        class Projectile { /* ... No changes ... */ 
+            constructor(x, y, velX, velY, owner = 'enemy') { this.x = x; this.y = y; this.velX = velX; this.velY = velY; this.owner = owner; this.width = 6; this.height = 6; this.life = 180; this.trail = []; this.color = owner === 'enemy' ? '#e74c3c' : '#3498db'; }
+            update() { this.trail.push({ x: this.x, y: this.y, w: this.width, h:this.height }); if (this.trail.length > 8) this.trail.shift(); this.x += this.velX; this.y += this.velY; this.velY += 0.05; this.life--; if (this.owner === 'enemy' && this.checkCollision(player) && player.invulnerable <= 0) { this.createImpactEffect(); loseLife(); return false; } for (let platform of platforms) { if (this.checkCollision(platform)) { this.createImpactEffect(platform.color); return false; } } return this.life > 0 && this.x > -this.width && this.x < canvas.width && this.y > -this.height && this.y < canvas.height; }
+            checkCollision(rect) { return this.x < rect.x + rect.width && this.x + this.width > rect.x && this.y < rect.y + rect.height && this.y + this.height > rect.y; }
+            createImpactEffect(color = '#ff6b35') { for (let i = 0; i < 6; i++) { particles.push(new Particle(this.x + this.width/2, this.y + this.height/2, color, {size: 4})); } }
+            draw() { for (let i = 0; i < this.trail.length; i++) { const point = this.trail[i]; const alpha = (i / this.trail.length) * 0.5; ctx.globalAlpha = alpha; ctx.fillStyle = this.color; ctx.fillRect(point.x + (this.width - point.w)/2, point.y + (this.height - point.h)/2 , point.w * (i/this.trail.length), point.h * (i/this.trail.length)); } ctx.globalAlpha = 1; ctx.fillStyle = this.color; ctx.fillRect(this.x, this.y, this.width, this.height); ctx.fillStyle = 'rgba(255, 255, 255, 0.8)'; ctx.fillRect(this.x + 1, this.y + 1, this.width - 2, this.height - 2); }
+        }
+        class Particle { /* ... No changes ... */ 
+            constructor(x, y, color = '#ffffff', options = {}) { this.x = x + (Math.random() - 0.5) * (options.spread || 10); this.y = y + (Math.random() - 0.5) * (options.spread || 10); this.velX = (Math.random() - 0.5) * (options.speedX || 6); this.velY = (Math.random() - 0.5) * (options.speedY || 6) + (options.vyBase || -2); this.color = color; this.life = (options.life || 40) + Math.random() * 20; this.maxLife = this.life; this.size = (options.size || 2) + Math.random() * 3; this.gravity = options.gravity || 0.2; this.friction = options.friction || 0.98; }
+            update() { this.x += this.velX; this.y += this.velY; this.velY += this.gravity; this.velX *= this.friction; this.life--; this.size *= 0.97; return this.life > 0 && this.size > 0.5; }
+            draw() { const alpha = Math.max(0, this.life / this.maxLife); ctx.globalAlpha = alpha; ctx.fillStyle = this.color; ctx.fillRect(this.x - this.size/2, this.y - this.size/2, this.size, this.size); ctx.globalAlpha = 1; }
+        }
+        class Flag { /* ... No changes ... */ 
+            constructor(x, y) { this.x = x; this.y = y; this.poleWidth = 10; this.poleHeight = 50; this.flagWidth = 35; this.flagHeight = 22; this.wave = Math.random() * Math.PI * 2; this.sparkles = []; this.glowIntensity = 0; for (let i = 0; i < 5; i++) { this.sparkles.push({ x: Math.random() * this.flagWidth, y: Math.random() * this.flagHeight, phase: Math.random() * Math.PI * 2, speed: 0.05 + Math.random() * 0.05, size: 1 + Math.random() * 1 }); } }
+            update() { this.wave += 0.12; this.glowIntensity = Math.sin(this.wave * 0.5) * 0.3 + 0.7; for (let sparkle of this.sparkles) { sparkle.phase += sparkle.speed; } }
+            draw() { const poleTopY = this.y - this.poleHeight; ctx.shadowColor = '#00ffaa'; ctx.shadowBlur = 10 * this.glowIntensity; ctx.fillStyle = '#8B4513'; ctx.fillRect(this.x, poleTopY, this.poleWidth, this.poleHeight); ctx.fillStyle = '#CD7F32'; ctx.fillRect(this.x - 1, poleTopY - 3, this.poleWidth + 2, 3); const flagAttachX = this.x + this.poleWidth; const flagAttachY = poleTopY + 5; ctx.beginPath(); ctx.moveTo(flagAttachX, flagAttachY); for (let i = 0; i <= this.flagWidth; i++) { const waveEffect = Math.sin(this.wave + i * 0.2) * 3; ctx.lineTo(flagAttachX + i, flagAttachY + waveEffect + i * 0.1); } ctx.lineTo(flagAttachX + this.flagWidth, flagAttachY + this.flagHeight + Math.sin(this.wave + this.flagWidth * 0.2) * 3 + this.flagWidth * 0.1); for (let i = this.flagWidth; i >= 0; i--) { const waveEffect = Math.sin(this.wave + i * 0.2 - 0.3) * 3; ctx.lineTo(flagAttachX + i, flagAttachY + this.flagHeight + waveEffect + i * 0.1); } ctx.closePath(); ctx.fillStyle = '#00b894'; ctx.fill(); ctx.fillStyle = '#ffeb3b'; const starCenterX = flagAttachX + this.flagWidth * 0.5; const starCenterY = flagAttachY + this.flagHeight * 0.5 + Math.sin(this.wave + this.flagWidth *0.1) * 3; this.drawStar(starCenterX, starCenterY, 5, 8, 4); for (let sparkle of this.sparkles) { const alpha = (Math.sin(sparkle.phase) + 1) * 0.35 * this.glowIntensity; ctx.globalAlpha = Math.max(0, Math.min(1, alpha)); ctx.fillStyle = '#ffeb3b'; const sparkleWaveEffect = Math.sin(this.wave + sparkle.x * 0.2) * 3; ctx.fillRect( flagAttachX + sparkle.x - sparkle.size / 2, flagAttachY + sparkle.y + sparkleWaveEffect + sparkle.x * 0.1 - sparkle.size / 2, sparkle.size, sparkle.size ); } ctx.globalAlpha = 1; ctx.shadowBlur = 0; ctx.shadowColor = 'transparent'; }
+            drawStar(cx,cy,spikes,outerRadius,innerRadius){let rot=Math.PI/2*3;let x=cx;let y=cy;const step=Math.PI/spikes;ctx.beginPath();ctx.moveTo(cx,cy-outerRadius);for(let i=0;i<spikes;i++){x=cx+Math.cos(rot)*outerRadius;y=cy+Math.sin(rot)*outerRadius;ctx.lineTo(x,y);rot+=step;x=cx+Math.cos(rot)*innerRadius;y=cy+Math.sin(rot)*innerRadius;ctx.lineTo(x,y);rot+=step;}ctx.lineTo(cx,cy-outerRadius);ctx.closePath();ctx.fill();}
+        }
+        
+        function updateUI() { document.getElementById('lives').textContent = gameState.lives; document.getElementById('level').textContent = gameState.level; document.getElementById('score').textContent = gameState.score; }
+        function loseLife() { if (gameState.gameOver || player.invulnerable > 0) return; player.invulnerable = 120; createPlayerDamageParticles(); gameState.lives--; updateUI(); if (gameState.lives <= 0) { gameState.gameOver = true; gameState.won = false; console.log("Game Over!"); } else { player.x = 100; player.y = canvas.height - 200; player.velX = 0; player.velY = 0; player.onGround = false; } }
+        function createPlayerDamageParticles() { for (let i = 0; i < 15; i++) { particles.push(new Particle(player.x + player.width / 2, player.y + player.height / 2, player.color, {speedX: 8, speedY: 8, gravity: 0.3})); } }
+        function generatePlatforms() { /* ... No changes ... */ platforms = []; platforms.push(new Platform(0, canvas.height - 40, canvas.width / 2 - 50, 40)); platforms.push(new Platform(canvas.width / 2 + 50, canvas.height - 40, canvas.width / 2 - 50, 40)); platforms.push(new Platform(150, canvas.height - 120, 120, 20)); platforms.push(new Platform(350, canvas.height - 180, 100, 20, 'moving')); platforms.push(new Platform(50, canvas.height - 250, 80, 20, 'ice')); platforms.push(new Platform(550, canvas.height - 280, 100, 20, 'crumbling')); platforms.push(new Platform(750, canvas.height - 150, 150, 20)); platforms.push(new Platform(canvas.width - 200, canvas.height - 350, 130, 20, 'normal'));}
+        function generateEnemies() { /* ... No changes ... */ enemies = []; if (gameState.level >= 1) { enemies.push(new Enemy(300, canvas.height - 80, 'chaser')); enemies.push(new Enemy(600, canvas.height - 80, 'shooter')); } if (gameState.level >= 2) { enemies.push(new Enemy(400, canvas.height - 220, 'spiker')); enemies.push(new Enemy(100, canvas.height - 290, 'jumper'));} if (gameState.level >= 3) { enemies.push(new Enemy(canvas.width - 250, canvas.height - 80, 'chaser')); enemies.push(new Enemy(200, canvas.height - 300, 'shooter'));}}
+        function generateCollectibles() { /* ... No changes ... */ collectibles = []; const cSpots = [{x:260,y:canvas.height-150},{x:400,y:canvas.height-220},{x:100,y:canvas.height-280},{x:600,y:canvas.height-310},{x:800,y:canvas.height-180}]; cSpots.forEach(s=>{if(Math.random()>0.3)collectibles.push({x:s.x,y:s.y,width:15,height:15,color:'#ffd700',collected:false,score:10*gameState.level,animFrame:Math.random()*Math.PI*2});});}
+        function placeFlag() { const fp = platforms.find(p => p.x > canvas.width - 250 && p.y < canvas.height - 300); if (fp) {flag = new Flag(fp.x + fp.width/2-5, fp.y);}else{flag = new Flag(canvas.width-100,canvas.height-40);}}
+        function generateNewLevelLogic() { gameState.gameOver=false;gameState.won=false;player.x=100;player.y=canvas.height-200;player.velX=0;player.velY=0;player.onGround=false;player.invulnerable=60;generatePlatforms();generateEnemies();generateCollectibles();placeFlag();projectiles=[];particles=[];updateUI();console.log(`Starting Level ${gameState.level}`);}
+        function generateNewLevelButton() { if(gameState.won){gameState.level++;}else if(!gameState.gameOver){/*gameState.lives = Math.min(3, gameState.lives+1);*/}else{resetGame();return;}generateNewLevelLogic();}
+        function resetGame() { gameState.lives=3;gameState.level=1;gameState.score=0;gameState.gameOver=false;gameState.won=false;generateNewLevelLogic();console.log("Game Reset!");}
 
-        updateGameInfoDisplays();
-        renderPlayerSeats();
-        renderCommunityCards(); // Will show empty placeholders initially
-        addChatMessage("System", "Hole cards dealt. Pre-flop betting begins.");
-        startGameButton.classList.add('hidden'); // Hide until hand ends
-    }
+        function updatePlayer() {
+            if (gameState.gameOver && !gameState.won) return;
 
-    // --- Initial Page Load ---
-    document.addEventListener('DOMContentLoaded', () => {
-        renderPlayerSeats(); // Initial render of all seats as open/empty
-        renderCommunityCards();
-        updatePlayerChipsDisplay();
-        updateGameInfoDisplays();
-        updatePlayerList();
-    });
+            if (keys['arrowleft'] || keys['a']) { player.velX -= player.acceleration; player.facing = -1; }
+            else if (keys['arrowright'] || keys['d']) { player.velX += player.acceleration; player.facing = 1; }
+            else { if (player.onGround) player.velX *= player.friction; else player.velX *= 0.97;  if (Math.abs(player.velX) < 0.1) player.velX = 0;} // Adjusted friction
 
-</script>
+            if (player.velX > player.maxSpeed) player.velX = player.maxSpeed;
+            if (player.velX < -player.maxSpeed) player.velX = -player.maxSpeed;
+
+            if ((keys['arrowup'] || keys['w'] || keys[' ']) && player.onGround) { player.velY = -player.jumpPower; player.onGround = false; for (let i=0;i<5;i++){particles.push(new Particle(player.x+player.width/2,player.y+player.height,'#dfe6e9'));}}
+            
+            player.velY += 0.7; // Gravity
+            if (player.velY > 15) player.velY = 15; // Terminal velocity
+
+            let onIcePlatform = false;
+
+            // Horizontal Collision
+            player.x += player.velX;
+            for (let p of platforms) {
+                if (player.x < p.x + p.width && player.x + player.width > p.x && player.y < p.y + p.height && player.y + player.height > p.y) {
+                    if (player.velX > 0) { player.x = p.x - player.width; }
+                    else if (player.velX < 0) { player.x = p.x + p.width; }
+                    player.velX = 0;
+                }
+            }
+
+            // Vertical Collision
+            player.y += player.velY;
+            player.onGround = false; 
+            for (let p of platforms) {
+                if (player.x < p.x + p.width && player.x + player.width > p.x && player.y < p.y + p.height && player.y + player.height > p.y) {
+                    if (player.velY > 0) { 
+                        player.y = p.y - player.height; player.velY = 0; player.onGround = true;
+                        if (p.type === 'moving') { player.x += p.moveSpeed * p.direction; }
+                        if (p.type === 'ice') { onIcePlatform = true; }
+                        if (p.type === 'crumbling') { p.startCrumble(); }
+                    } else if (player.velY < 0) { 
+                        player.y = p.y + p.height; player.velY = 0;
+                    }
+                }
+            }
+            
+            if(onIcePlatform && player.onGround) { if(!(keys['arrowleft']||keys['a']||keys['arrowright']||keys['d'])) player.velX *= 0.96; } // Slipperiness when no input on ice
+            else if (player.onGround && !(keys['arrowleft']||keys['a']||keys['arrowright']||keys['d'])) { player.velX *= (player.friction * 0.8); } // Normal ground friction
+            
+            if (player.x < 0) player.x = 0; if (player.x + player.width > canvas.width) player.x = canvas.width - player.width;
+            if (player.y > canvas.height + player.height) { loseLife(); }
+            if (player.invulnerable > 0) player.invulnerable--;
+            if (!player.onGround) { player.animFrame = 2; } else if (Math.abs(player.velX)>0.1) { player.animFrame=(player.animFrame+0.2)%2; } else { player.animFrame = 0.5 + Math.sin(Date.now()*0.005)*0.4; }
+        }
+
+        function drawPlayer() { /* ... No changes ... */ if (player.invulnerable > 0 && Math.floor(player.invulnerable / 6) % 2 === 0) { return; } ctx.fillStyle = player.color; let drawX = player.x; let drawY = player.y; let dWidth = player.width; let dHeight = player.height; if (player.animFrame === 2) { dHeight = player.height + 3; dWidth = player.width - 3; drawX = player.x + 1.5; drawY = player.y - 1.5; } else if (player.animFrame < 2 && player.onGround && Math.abs(player.velX) > 0.1) { dHeight = player.height - Math.abs(Math.sin(Date.now() * 0.02)) * 3; drawY = player.y + (player.height - dHeight); } else if (player.animFrame < 2 && player.onGround) { dHeight = player.height - (player.animFrame - 0.5) * 4; drawY = player.y + (player.height - dHeight)/2; } ctx.fillRect(drawX, drawY, dWidth, dHeight); ctx.fillStyle = 'white'; const eyeY = drawY + dHeight * 0.25; const eyeSize = 3; if (player.facing > 0) { ctx.fillRect(drawX + dWidth * 0.6, eyeY, eyeSize, eyeSize); } else { ctx.fillRect(drawX + dWidth * 0.2, eyeY, eyeSize, eyeSize); } ctx.fillStyle = 'black'; if (player.facing > 0) { ctx.fillRect(drawX + dWidth * 0.6 + 1, eyeY + 1, eyeSize-2, eyeSize-2); } else { ctx.fillRect(drawX + dWidth * 0.2 + 1, eyeY + 1, eyeSize-2, eyeSize-2); }}
+        function updateCollectibles() { /* ... No changes ... */ for (let i = collectibles.length - 1; i >= 0; i--) { const c = collectibles[i]; c.animFrame += 0.05; if (!c.collected && player.x < c.x + c.width && player.x + player.width > c.x && player.y < c.y + c.height && player.y + player.height > c.y) { c.collected = true; gameState.score += c.score; updateUI(); for (let j = 0; j < 10; j++) { particles.push(new Particle(c.x + c.width / 2, c.y + c.height / 2, c.color, {size:5, life: 25})); } collectibles.splice(i, 1); }}}
+        function drawCollectibles() { /* ... No changes ... */ for (let c of collectibles) { if (!c.collected) { ctx.fillStyle = c.color; const bounce = Math.sin(c.animFrame) * 4; ctx.beginPath(); ctx.arc(c.x + c.width/2, c.y + c.height/2 + bounce, c.width/2, 0, Math.PI*2); ctx.fill(); ctx.fillStyle = 'rgba(255, 255, 255, 0.7)'; ctx.beginPath(); ctx.arc(c.x + c.width/2 + 2, c.y + c.height/2 + bounce -2, c.width/4, 0, Math.PI*2); ctx.fill(); }}}
+        
+        function checkEnemyPlayerCollisions() { 
+            if (player.invulnerable > 0) return;
+            for (let i = enemies.length - 1; i >= 0; i--) {
+                const enemy = enemies[i];
+                if (player.x < enemy.x + enemy.width && player.x + player.width > enemy.x &&
+                    player.y < enemy.y + enemy.height && player.y + player.height > enemy.y) {
+                    // Stomp condition: Player is moving down, and player's bottom was above enemy's top in the previous frame (approx).
+                    const playerPrevBottom = player.y + player.height - player.velY; // Approximate previous bottom
+
+                    if (player.velY > 0 && playerPrevBottom <= enemy.y + enemy.height/2) { // Adjusted stomp condition slightly
+                        enemy.health = 0; 
+                        particles.push(...Array(10).fill(null).map(() => new Particle(enemy.x + enemy.width/2, enemy.y + enemy.height/2, enemy.color, {vyBase: -5, speedY:3})));
+                        player.velY = -player.jumpPower * 0.7; // Good bounce
+                        player.onGround = false; 
+                        gameState.score += 50 * gameState.level; updateUI();
+                    } else { 
+                        loseLife(); 
+                        player.velX = (player.x + player.width/2 < enemy.x + enemy.width/2 ? -1 : 1) * 7; // Stronger knockback
+                        player.velY = -7; 
+                        player.onGround = false;
+                        break; 
+                    }
+                }
+            }
+            enemies = enemies.filter(e => e.health > 0);
+        }
+        function checkWinCondition() { /* ... No changes ... */ if (!flag || gameState.won || (gameState.gameOver && !gameState.won) ) return; if (player.x < flag.x + flag.poleWidth + flag.flagWidth && player.x + player.width > flag.x && player.y < flag.y && player.y + player.height > flag.y - flag.poleHeight) { gameState.won = true; gameState.score += 100 * gameState.level; updateUI(); console.log(`Level ${gameState.level} Complete!`); for(let i=0; i<50; i++) { particles.push(new Particle(flag.x + flag.poleWidth/2, flag.y - flag.poleHeight, '#FFD700', {spread: 30, speedY: 8, vyBase: -10, life: 80})); } const maxLevels = 3; if (gameState.level >= maxLevels) { console.log("YOU WON THE GAME!"); gameState.gameOver = true; } else { setTimeout(() => { gameState.level++; generateNewLevelLogic(); }, 2000); }}}
+        function gameLoop(timestamp) { /* ... No major changes to screen display ... */ 
+            const deltaTime = (timestamp - lastTime) || 0; lastTime = timestamp;
+            const bgGradient = ctx.createLinearGradient(0,0,0,canvas.height); const timeOfDay = (Date.now() % 20000) / 20000; const c1 = `hsl(${180+timeOfDay*60},70%,60%)`; const c2 = `hsl(${200+timeOfDay*60},80%,70%)`; const c3 = `hsl(${140-timeOfDay*40},60%,50%)`; const c4 = `hsl(${160-timeOfDay*40},70%,60%)`; bgGradient.addColorStop(0,c1);bgGradient.addColorStop(0.4,c2);bgGradient.addColorStop(0.6,c3);bgGradient.addColorStop(1,c4);ctx.fillStyle=bgGradient;ctx.fillRect(0,0,canvas.width,canvas.height);
+            if(gameState.gameOver&&gameState.won&&gameState.level>=3){ctx.fillStyle='rgba(0,0,0,0.7)';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.font='bold 48px Courier New';ctx.fillStyle='#00ff00';ctx.textAlign='center';ctx.fillText('🏆 YOU WON! 🏆',canvas.width/2,canvas.height/2-30);ctx.font='24px Courier New';ctx.fillStyle='#ffffff';ctx.fillText(`Final Score: ${gameState.score}`,canvas.width/2,canvas.height/2+20);ctx.fillText('Press Reset to Play Again',canvas.width/2,canvas.height/2+60);}
+            else if(gameState.gameOver&&!gameState.won){ctx.fillStyle='rgba(0,0,0,0.8)';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.font='bold 48px Courier New';ctx.fillStyle='#ff0000';ctx.textAlign='center';ctx.fillText('GAME OVER',canvas.width/2,canvas.height/2-20);ctx.font='24px Courier New';ctx.fillStyle='#ffffff';ctx.fillText('Press Reset to Try Again',canvas.width/2,canvas.height/2+30);}
+            else{updatePlayer();platforms.forEach(p=>p.update());enemies.forEach(e=>e.update());projectiles=projectiles.filter(p=>p.update());particles=particles.filter(p=>p.update());if(flag)flag.update();updateCollectibles();checkEnemyPlayerCollisions();if(!gameState.won)checkWinCondition();platforms.forEach(p=>p.draw());particles.forEach(p=>p.draw());drawCollectibles();if(flag)flag.draw();enemies.forEach(e=>e.draw());projectiles.forEach(p=>p.draw());drawPlayer();}
+            requestAnimationFrame(gameLoop);
+        }
+        let lastTime = 0; // Ensure lastTime is initialized for gameLoop
+        function init() { resetGame(); requestAnimationFrame(gameLoop); }
+        init();
+    </script>
 </body>
 </html>
