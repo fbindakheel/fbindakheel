@@ -1,0 +1,1566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Poker Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0a3d2e, #1a5c4a, #0f4c3a);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .game-header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .game-header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.7);
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .connection-status {
+            padding: 15px 25px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            text-align: center;
+            font-weight: bold;
+            backdrop-filter: blur(10px);
+            border: 2px solid;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+
+        .status-host {
+            background: linear-gradient(45deg, rgba(45, 90, 39, 0.8), rgba(74, 157, 63, 0.6));
+            border-color: #4a9d3f;
+            color: #90ee90;
+        }
+
+        .status-connected {
+            background: linear-gradient(45deg, rgba(31, 77, 58, 0.8), rgba(58, 143, 95, 0.6));
+            border-color: #3a8f5f;
+            color: #98fb98;
+        }
+
+        .status-disconnected {
+            background: linear-gradient(45deg, rgba(90, 39, 39, 0.8), rgba(157, 63, 63, 0.6));
+            border-color: #9d3f3f;
+            color: #ff6b6b;
+        }
+
+        .setup-panel {
+            background: linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.05));
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255,255,255,0.2);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: #e0e0e0;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 15px 20px;
+            border-radius: 12px;
+            border: 2px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.95);
+            color: #333;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #4a9d3f;
+            box-shadow: 0 0 20px rgba(74, 157, 63, 0.3);
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 8px;
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #4a9d3f, #5fb354, #4a9d3f);
+            color: white;
+            box-shadow: 0 6px 20px rgba(74, 157, 63, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(74, 157, 63, 0.6);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(45deg, #6c757d, #868e96, #6c757d);
+            color: white;
+            box-shadow: 0 6px 20px rgba(108, 117, 125, 0.4);
+        }
+
+        .btn-danger {
+            background: linear-gradient(45deg, #dc3545, #e85463, #dc3545);
+            color: white;
+            box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
+        }
+
+        .btn-info {
+            background: linear-gradient(45deg, #17a2b8, #20c997, #17a2b8);
+            color: white;
+            box-shadow: 0 6px 20px rgba(23, 162, 184, 0.4);
+        }
+
+        .btn-warning {
+            background: linear-gradient(45deg, #ffc107, #ffed4e, #ffc107);
+            color: #333;
+            box-shadow: 0 6px 20px rgba(255, 193, 7, 0.4);
+        }
+
+        .game-layout {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 30px;
+            align-items: start;
+        }
+
+        .main-game {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .poker-table {
+            background: radial-gradient(ellipse at center, #0d3d2a 0%, #063025 70%, #041f1a 100%);
+            border-radius: 50%;
+            width: 100%;
+            max-width: 800px;
+            height: 500px;
+            margin: 0 auto;
+            position: relative;
+            border: 12px solid #8b4513;
+            box-shadow: 
+                inset 0 0 50px rgba(0,0,0,0.5),
+                0 20px 40px rgba(0,0,0,0.4);
+        }
+
+        .community-cards {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            gap: 12px;
+            padding: 15px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 15px;
+            border: 2px solid rgba(255,255,255,0.1);
+        }
+        .community-cards .card:empty { /* Style for placeholder cards */
+            background: rgba(255,255,255,0.1);
+            border: 2px dashed rgba(255,255,255,0.2);
+        }
+
+
+        .card {
+            width: 70px;
+            height: 100px;
+            background: linear-gradient(145deg, #ffffff, #f0f0f0);
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center; /* Center content for placeholder */
+            padding: 8px;
+            color: black;
+            font-weight: bold;
+            font-size: 16px;
+            border: 3px solid #333;
+            transition: all 0.4s ease;
+            position: relative;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .card.red {
+            color: #dc2626;
+        }
+
+        .card.black {
+            color: #1f2937;
+        }
+
+        .card .suit {
+            font-size: 24px; /* Make suit bigger */
+        }
+        .card .rank {
+             font-size: 20px; /* Make rank bigger */
+        }
+        .card .top-left {
+            position: absolute;
+            top: 5px;
+            left: 8px;
+            text-align: center;
+        }
+        .card .bottom-right {
+            position: absolute;
+            bottom: 5px;
+            right: 8px;
+            transform: rotate(180deg);
+            text-align: center;
+        }
+
+
+        .card.highlighted {
+            border-color: #059669;
+            box-shadow: 
+                0 0 25px rgba(5, 150, 105, 0.8),
+                0 0 50px rgba(5, 150, 105, 0.4);
+            background: linear-gradient(145deg, #f0fdf4, #dcfce7);
+            transform: scale(1.05);
+        }
+
+        .card.potential {
+            border-color: #f59e0b;
+            box-shadow: 
+                0 0 20px rgba(245, 158, 11, 0.6),
+                0 0 40px rgba(245, 158, 11, 0.3);
+            background: linear-gradient(145deg, #fffbeb, #fef3c7);
+        }
+
+        .card.winning {
+            border-color: #7c3aed;
+            box-shadow: 
+                0 0 30px rgba(124, 58, 237, 0.8),
+                0 0 60px rgba(124, 58, 237, 0.4);
+            background: linear-gradient(145deg, #faf5ff, #e9d5ff);
+            animation: winPulse 2s infinite;
+        }
+
+        @keyframes winPulse {
+            0%, 100% { transform: scale(1.05); }
+            50% { transform: scale(1.1); }
+        }
+
+        .card-back {
+            background: linear-gradient(45deg, #1e3a8a, #3b82f6, #1e40af);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+        }
+        .card-back .card-design { /* Example for a simple card back design */
+            width: 80%;
+            height: 90%;
+            border: 2px solid rgba(255,255,255,0.5);
+            border-radius: 5px;
+            background: repeating-linear-gradient(
+                45deg,
+                rgba(255,255,255,0.1),
+                rgba(255,255,255,0.1) 5px,
+                transparent 5px,
+                transparent 10px
+            );
+        }
+
+
+        .player-seats {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .player-seat {
+            position: absolute;
+            width: 140px; /* Increased width for better card display */
+            min-height: 110px; /* Increased height */
+            background: linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.05));
+            border-radius: 15px;
+            padding: 10px;
+            text-align: center;
+            border: 2px solid transparent;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+
+        .player-seat.active {
+            border-color: #ffd700;
+            box-shadow: 
+                0 0 25px rgba(255, 215, 0, 0.8),
+                inset 0 0 20px rgba(255, 215, 0, 0.2);
+            transform: scale(1.05);
+        }
+
+        .player-seat.dealer::after {
+            content: 'D';
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background-color: #ef4444;
+            color: white;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.8);
+        }
+
+
+        /* Adjusted seat positions for larger poker table */
+        .seat-1 { top: -65px; left: 50%; transform: translateX(-50%); } /* Player 1 (Bottom Center on screen) */
+        .seat-2 { top: 50%; left: -120px; transform: translateY(-50%); } /* Player 2 (Left Middle) */
+        .seat-3 { top: -65px; left: calc(50% - 160px); transform: translateX(-50%); } /* Player 3 (Bottom Left on screen) */
+        .seat-4 { top: 50%; right: -120px; transform: translateY(-50%); } /* Player 4 (Right Middle) */
+        .seat-5 { top: -65px; left: calc(50% + 160px); transform: translateX(-50%); } /* Player 5 (Bottom Right on screen) */
+        .seat-6 { bottom: -65px; left: 50%; transform: translateX(-50%); } /* Player 6 (Top Center on screen) */
+
+
+        .player-info {
+            margin-bottom: 8px; /* Adjusted margin */
+        }
+
+        .player-name {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 4px; /* Adjusted margin */
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .player-chips {
+            font-size: 13px; /* Slightly larger */
+            color: #ffd700;
+            font-weight: 600;
+        }
+
+        .player-cards {
+            display: flex;
+            gap: 6px; /* Slightly more gap */
+            justify-content: center;
+            margin-top: 8px; /* Adjusted margin */
+            height: 50px; /* Ensure space for cards */
+        }
+
+        .player-cards .card { /* Player specific card styling */
+            width: 40px; /* Slightly larger */
+            height: 58px; /* Maintain aspect ratio */
+            font-size: 8px; /* Adjust if needed */
+            padding: 2px;
+            border-width: 2px;
+        }
+        .player-cards .card .suit { font-size: 14px; }
+        .player-cards .card .rank { font-size: 12px; }
+        .player-cards .card .top-left { top: 2px; left: 3px;}
+        .player-cards .card .bottom-right { bottom: 2px; right: 3px;}
+
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .hand-analyzer {
+            background: linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.05));
+            border-radius: 20px;
+            padding: 25px;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255,255,255,0.2);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+        }
+
+        .hand-analyzer h3 {
+            color: #4ade80;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 1.3rem;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+        }
+
+        .current-hand {
+            background: linear-gradient(135deg, rgba(74, 222, 128, 0.2), rgba(34, 197, 94, 0.1));
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            border: 2px solid #22c55e;
+            box-shadow: 0 8px 25px rgba(34, 197, 94, 0.2);
+        }
+
+        .hand-strength {
+            font-size: 18px;
+            font-weight: bold;
+            color: #ffd700;
+            text-align: center;
+            margin-bottom: 10px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+        }
+
+        .hand-cards {
+            font-size: 14px;
+            text-align: center;
+            opacity: 0.9;
+            color: #e5e7eb;
+        }
+
+        .hand-probability {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #34d399;
+        }
+
+        .potential-hands {
+            margin-top: 20px;
+        }
+
+        .potential-hands h4 {
+            color: #f59e0b;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .potential-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            margin: 8px 0;
+            background: linear-gradient(90deg, rgba(245, 158, 11, 0.15), rgba(245, 158, 11, 0.05));
+            border-radius: 10px;
+            border-left: 4px solid #f59e0b;
+            transition: all 0.3s ease;
+        }
+
+        .potential-item:hover {
+            transform: translateX(5px);
+            background: linear-gradient(90deg, rgba(245, 158, 11, 0.25), rgba(245, 158, 11, 0.1));
+        }
+
+        .potential-name {
+            font-weight: 600;
+            color: #f3f4f6;
+        }
+
+        .potential-chance {
+            color: #fbbf24;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .outs-info {
+            margin-top: 20px;
+            padding: 15px;
+            background: linear-gradient(135deg, rgba(23, 162, 184, 0.2), rgba(6, 182, 212, 0.1));
+            border-radius: 12px;
+            border-left: 4px solid #06b6d4;
+            box-shadow: 0 6px 20px rgba(6, 182, 212, 0.2);
+        }
+
+        .outs-info h4 {
+            color: #06b6d4;
+            margin-bottom: 10px;
+            font-size: 1rem;
+        }
+
+        .game-controls {
+            text-align: center;
+            background: linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.05));
+            padding: 25px;
+            border-radius: 20px;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255,255,255,0.2);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+        }
+
+        .bet-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .bet-amount-control {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 12px;
+        }
+
+        .bet-slider {
+            width: 250px;
+            height: 8px;
+            border-radius: 4px;
+            background: #4b5563;
+            outline: none;
+            cursor: pointer;
+            -webkit-appearance: none; /* Override default appearance */
+            appearance: none;
+        }
+        .bet-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #4a9d3f;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid white;
+        }
+
+        .bet-slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: #4a9d3f;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid white;
+        }
+
+
+        .game-info {
+            background: linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.05));
+            padding: 25px;
+            border-radius: 20px;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255,255,255,0.2);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 20px;
+        }
+
+        .info-item {
+            text-align: center;
+            padding: 15px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 12px;
+            transition: transform 0.3s ease;
+        }
+
+        .info-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .info-label {
+            font-size: 14px;
+            opacity: 0.8;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .info-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #ffd700;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+        }
+
+        .player-list {
+            background: linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.05));
+            padding: 25px;
+            border-radius: 20px;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255,255,255,0.2);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+        }
+
+        .player-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            margin: 10px 0;
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            border-left: 4px solid #4ade80;
+            transition: all 0.3s ease;
+        }
+
+        .player-item:hover {
+            transform: translateX(5px);
+            background: rgba(255,255,255,0.1);
+        }
+
+        .chat-area {
+            background: linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.05));
+            border-radius: 20px;
+            padding: 25px;
+            height: 300px;
+            display: flex;
+            flex-direction: column;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255,255,255,0.2);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 15px;
+            padding: 15px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .chat-message {
+            margin-bottom: 8px;
+            padding: 8px 12px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+        }
+        .chat-message .sender {
+            font-weight: bold;
+            color: #4ade80; /* Green for sender name */
+            margin-right: 5px;
+        }
+        .chat-message .text {
+             color: #e0e0e0; /* Light grey for message text */
+        }
+
+
+        .chat-input {
+            display: flex;
+            gap: 12px;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 12px 15px;
+            border-radius: 12px;
+            border: 2px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.9);
+            color: #333;
+            font-size: 14px;
+        }
+        .chat-input input:focus {
+            border-color: #4a9d3f;
+        }
+        .chat-input button { /* Basic styling for a send button */
+            padding: 12px 20px;
+        }
+
+
+        .hidden {
+            display: none !important;
+        }
+
+        .help-modal { /* Added ID here */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        .help-content {
+            background: linear-gradient(135deg, #1a5c4a, #0f4c3a);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 700px;
+            max-height: 85vh;
+            overflow-y: auto;
+            border: 2px solid #4ade80;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+            position: relative; /* For close button positioning */
+        }
+        .help-content .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: #ff6b6b;
+            font-size: 2rem;
+            cursor: pointer;
+            padding: 5px;
+            line-height: 1;
+        }
+        .help-content .close-btn:hover {
+            color: #ff3b3b;
+        }
+
+
+        .help-content h2 {
+            color: #4ade80;
+            margin-bottom: 25px;
+            text-align: center;
+            font-size: 2rem;
+        }
+
+        .help-section {
+            margin-bottom: 25px;
+        }
+
+        .help-section h3 {
+            color: #ffd700;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .hand-ranking {
+            display: flex;
+            justify-content: space-between;
+            align-items: center; /* Vertically align items */
+            padding: 12px 15px;
+            margin: 8px 0;
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+            border-left: 3px solid #4ade80;
+        }
+        .hand-ranking-name {
+            font-weight: bold;
+            color: #f3f4f6;
+        }
+        .hand-ranking-example {
+            font-size: 0.9em;
+            color: #bdc3c7;
+        }
+
+
+        .probability-bar {
+            width: 100%;
+            height: 20px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+
+        .probability-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ef4444, #f59e0b, #22c55e); /* Red to Yellow to Green */
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        @media (max-width: 1200px) {
+            .game-layout {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                order: -1; /* Sidebar will appear above main game on smaller screens if layout is 1fr */
+            }
+        }
+
+        @media (max-width: 768px) {
+            .game-header h1 { font-size: 2.2rem; }
+            .poker-table {
+                height: 350px; /* Adjust for smaller screens */
+                border-width: 8px;
+            }
+            .card { width: 55px; height: 80px; font-size: 12px; } /* Smaller community cards */
+            .card .suit { font-size: 18px; }
+            .card .rank { font-size: 16px; }
+
+            .player-seat { width: 100px; min-height: 90px; }
+            .player-cards .card { width: 30px; height: 45px; } /* Smaller player cards */
+            .player-cards .card .suit { font-size: 10px; }
+            .player-cards .card .rank { font-size: 9px; }
+
+
+            /* Adjust player seat positions for smaller table */
+            .seat-1 { top: -50px; }
+            .seat-2 { left: -70px; }
+            .seat-3 { top: -50px; left: calc(50% - 100px); }
+            .seat-4 { right: -70px; }
+            .seat-5 { top: -50px; left: calc(50% + 100px); }
+            .seat-6 { bottom: -50px; }
+
+
+            .container {
+                padding: 10px;
+            }
+            
+            .game-info {
+                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); /* Fit more items if possible */
+                gap: 10px;
+                padding: 15px;
+            }
+            .info-label { font-size: 12px; }
+            .info-value { font-size: 16px; }
+            
+            .bet-controls {
+                flex-direction: row; /* Keep horizontal but allow wrap */
+                align-items: center;
+                gap: 5px; /* Reduce gap */
+            }
+            .btn { padding: 10px 15px; font-size: 14px; margin: 5px; }
+
+            .bet-amount-control { flex-direction: column; gap: 10px; }
+            .bet-slider { width: 200px; }
+
+            .setup-panel, .hand-analyzer, .game-controls, .player-list, .chat-area, .help-content {
+                padding: 20px;
+            }
+            .chat-area { height: 250px; }
+        }
+         @media (max-width: 480px) {
+            .game-header h1 { font-size: 1.8rem; }
+            .poker-table { height: 300px; }
+            .card { width: 45px; height: 65px; font-size: 10px; }
+            .card .suit { font-size: 14px; }
+            .card .rank { font-size: 12px; }
+
+            .player-seat { width: 80px; min-height: 70px; padding: 5px;}
+            .player-name { font-size: 10px;}
+            .player-chips { font-size: 9px;}
+            .player-cards .card { width: 24px; height: 36px; }
+             .player-cards .card .suit { font-size: 8px; }
+             .player-cards .card .rank { font-size: 7px; }
+
+
+            .bet-controls .btn { padding: 8px 10px; font-size: 12px; }
+            .sidebar { display: none; } /* Optionally hide sidebar on very small screens */
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="game-header">
+            <h1>🃏 Professional Poker Night</h1>
+            <div id="connectionStatus" class="connection-status status-disconnected">
+                Not Connected
+            </div>
+        </div>
+
+        <div id="setupPanel" class="setup-panel">
+            <div class="input-group">
+                <label for="playerName">🎭 Your Name:</label>
+                <input type="text" id="playerName" placeholder="Enter your poker name" maxlength="20">
+            </div>
+            
+            <div class="input-group">
+                <label for="roomCode">🔐 Room Code (leave empty to host):</label>
+                <input type="text" id="roomCode" placeholder="Enter room code to join, or leave empty to host">
+            </div>
+            
+            <div style="text-align: center;">
+                <button class="btn btn-primary" onclick="joinOrHostGame()">🎮 Start Game</button>
+                <button class="btn btn-info" onclick="showHelp()">📖 Help & Rules</button>
+            </div>
+            
+            <div id="hostInfo" class="hidden" style="margin-top: 25px; text-align: center; padding: 25px; background: linear-gradient(135deg, rgba(74, 157, 63, 0.3), rgba(74, 157, 63, 0.1)); border-radius: 15px; border: 2px solid #4a9d3f;">
+                <h3>🎯 You are hosting!</h3>
+                <p>Share this room code with your friends:</p>
+                <h2 id="roomCodeDisplay" style="color: #ffd700; margin: 15px 0; font-size: 2.5rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);"></h2>
+                <p>Players can join by entering this code</p>
+            </div>
+        </div>
+
+        <div id="gameArea" class="hidden">
+            <div class="game-layout">
+                <div class="main-game">
+                    <div class="poker-table" id="pokerTable">
+                        <div class="community-cards" id="communityCards">
+                            <div class="card"></div>
+                            <div class="card"></div>
+                            <div class="card"></div>
+                            <div class="card"></div>
+                            <div class="card"></div>
+                        </div>
+                        
+                        <div class="player-seats" id="playerSeats">
+                            <div class="player-seat seat-1" id="player-seat-0">
+                                <div class="player-info">
+                                    <div class="player-name">Player 1</div>
+                                    <div class="player-chips">$1000</div>
+                                </div>
+                                <div class="player-cards">
+                                    <div class="card card-back"><div class="card-design"></div></div>
+                                    <div class="card card-back"><div class="card-design"></div></div>
+                                </div>
+                            </div>
+                            <div class="player-seat seat-2" id="player-seat-1">
+                                <div class="player-info"><div class="player-name">Seat Open</div><div class="player-chips"></div></div>
+                                <div class="player-cards"></div>
+                            </div>
+                             <div class="player-seat seat-3" id="player-seat-2">
+                                <div class="player-info"><div class="player-name">Seat Open</div><div class="player-chips"></div></div>
+                                <div class="player-cards"></div>
+                            </div>
+                            <div class="player-seat seat-4" id="player-seat-3">
+                                <div class="player-info"><div class="player-name">Seat Open</div><div class="player-chips"></div></div>
+                                <div class="player-cards"></div>
+                            </div>
+                            <div class="player-seat seat-5" id="player-seat-4">
+                                <div class="player-info"><div class="player-name">Seat Open</div><div class="player-chips"></div></div>
+                                <div class="player-cards"></div>
+                            </div>
+                            <div class="player-seat seat-6" id="player-seat-5">
+                                <div class="player-info"><div class="player-name">Seat Open</div><div class="player-chips"></div></div>
+                                <div class="player-cards"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="game-info">
+                        <div class="info-item">
+                            <div class="info-label">💰 Pot</div>
+                            <div class="info-value" id="potAmount">$0</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">🎯 Your Chips</div>
+                            <div class="info-value" id="playerChipsDisplay">$1000</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">💵 Current Bet</div>
+                            <div class="info-value" id="currentBetDisplay">$0</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">🎲 Round</div>
+                            <div class="info-value" id="gameRoundDisplay">Pre-flop</div>
+                        </div>
+                    </div>
+
+                    <div class="game-controls" id="gameControls">
+                        <div class="bet-controls">
+                            <button class="btn btn-danger" onclick="fold()">❌ Fold</button>
+                            <button class="btn btn-secondary" onclick="checkCall()">✅ Check/Call</button>
+                            <button class="btn btn-primary" onclick="raise()">📈 Raise</button>
+                            <button class="btn btn-warning" onclick="allIn()">🔥 All In</button>
+                            <button class="btn btn-info" onclick="showHelp()">❓ Help</button>
+                        </div>
+                        <div class="bet-amount-control">
+                            <span style="font-weight: 600;">💰 Bet Amount:</span>
+                            <input type="range" id="betSlider" class="bet-slider" min="0" max="1000" value="0">
+                            <span id="betAmountDisplay" style="font-weight: bold; color: #ffd700; font-size: 18px;">$0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sidebar">
+                    <div class="hand-analyzer">
+                        <h3>🎯 Advanced Hand Analysis</h3>
+                        
+                        <div class="current-hand">
+                            <div class="hand-strength" id="handStrength">High Card</div>
+                            <div class="hand-cards" id="handCardsInfo">No significant hand</div>
+                            <div class="hand-probability" id="handProbability">Strength: 0%</div>
+                            <div class="probability-bar">
+                                <div class="probability-fill" id="probabilityFill" style="width: 0%;"></div>
+                            </div>
+                        </div>
+
+                        <div class="potential-hands">
+                            <h4>🎲 Potential Hands</h4>
+                            <div id="potentialHandsList">
+                                <div class="potential-item">
+                                    <span class="potential-name">Calculating...</span>
+                                    <span class="potential-chance">0%</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="outs-info">
+                            <h4>📊 Outs & Odds</h4>
+                            <div id="outsInfoDisplay">Calculating outs...</div>
+                        </div>
+                    </div>
+                     <div class="player-list">
+                        <h3>👥 Players in Room</h3>
+                        <div id="playerListContainer">
+                            <div class="player-item">
+                                <span class="player-name">Waiting for players...</span>
+                                <span class="player-chips"></span>
+                            </div>
+                        </div>
+                    </div>
+                     <div class="chat-area">
+                        <h3>💬 Game Chat</h3>
+                        <div class="chat-messages" id="chatMessages">
+                            <div class="chat-message"><span class="sender system">System:</span> <span class="text">Welcome to the Poker Night!</span></div>
+                        </div>
+                        <div class="chat-input">
+                            <input type="text" id="chatInput" placeholder="Type your message...">
+                            <button class="btn btn-primary" onclick="sendChatMessage()">Send</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="helpModal" class="help-modal hidden">
+        <div class="help-content">
+            <button class="close-btn" onclick="hideHelp()">×</button>
+            <h2>📖 Poker Game Help & Rules</h2>
+            
+            <div class="help-section">
+                <h3>Basic Gameplay</h3>
+                <p>This is a Texas Hold'em Poker game. Each player is dealt two private cards (hole cards). Five community cards are dealt face-up on the 'board'. Players use their hole cards along with the community cards to make the best possible five-card poker hand.</p>
+            </div>
+
+            <div class="help-section">
+                <h3>Betting Rounds</h3>
+                <ul>
+                    <li><strong>Pre-flop:</strong> After hole cards are dealt.</li>
+                    <li><strong>Flop:</strong> After the first three community cards are dealt.</li>
+                    <li><strong>Turn:</strong> After the fourth community card is dealt.</li>
+                    <li><strong>River:</strong> After the fifth community card is dealt.</li>
+                </ul>
+                <p>In each round, players can Check, Bet, Call, Raise, or Fold.</p>
+            </div>
+
+            <div class="help-section">
+                <h3>Hand Rankings (Highest to Lowest)</h3>
+                <div class="hand-ranking"><span class="hand-ranking-name">Royal Flush</span> <span class="hand-ranking-example">A K Q J 10 (same suit)</span></div>
+                <div class="hand-ranking"><span class="hand-ranking-name">Straight Flush</span> <span class="hand-ranking-example">8 7 6 5 4 (same suit)</span></div>
+                <div class="hand-ranking"><span class="hand-ranking-name">Four of a Kind</span> <span class="hand-ranking-example">A A A A K</span></div>
+                <div class="hand-ranking"><span class="hand-ranking-name">Full House</span> <span class="hand-ranking-example">K K K Q Q</span></div>
+                <div class="hand-ranking"><span class="hand-ranking-name">Flush</span> <span class="hand-ranking-example">A K J 9 2 (all same suit)</span></div>
+                <div class="hand-ranking"><span class="hand-ranking-name">Straight</span> <span class="hand-ranking-example">A K Q J 10 (any suit)</span></div>
+                <div class="hand-ranking"><span class="hand-ranking-name">Three of a Kind</span> <span class="hand-ranking-example">Q Q Q K 2</span></div>
+                <div class="hand-ranking"><span class="hand-ranking-name">Two Pair</span> <span class="hand-ranking-example">J J 9 9 A</span></div>
+                <div class="hand-ranking"><span class="hand-ranking-name">One Pair</span> <span class="hand-ranking-example">A A K Q J</span></div>
+                <div class="hand-ranking"><span class="hand-ranking-name">High Card</span> <span class="hand-ranking-example">A K J 9 7 (different suits, no sequence)</span></div>
+            </div>
+            <div style="text-align: center; margin-top: 30px;">
+                <button class="btn btn-secondary" onclick="hideHelp()">Close Help</button>
+            </div>
+        </div>
+    </div>
+
+<script>
+    // --- Basic JavaScript for UI Interactivity ---
+
+    // DOM Elements
+    const setupPanel = document.getElementById('setupPanel');
+    const gameArea = document.getElementById('gameArea');
+    const playerNameInput = document.getElementById('playerName');
+    const roomCodeInput = document.getElementById('roomCode');
+    const connectionStatus = document.getElementById('connectionStatus');
+    const hostInfo = document.getElementById('hostInfo');
+    const roomCodeDisplay = document.getElementById('roomCodeDisplay');
+    const helpModal = document.getElementById('helpModal');
+    const betSlider = document.getElementById('betSlider');
+    const betAmountDisplay = document.getElementById('betAmountDisplay'); // Corrected ID from your HTML
+    const playerChipsDisplay = document.getElementById('playerChipsDisplay'); // Your chips display
+    const potAmountDisplay = document.getElementById('potAmount');
+    const currentBetDisplay = document.getElementById('currentBetDisplay');
+    const gameRoundDisplay = document.getElementById('gameRoundDisplay');
+    const chatMessages = document.getElementById('chatMessages');
+    const chatInput = document.getElementById('chatInput');
+    const playerSeatsContainer = document.getElementById('playerSeats');
+    const communityCardsContainer = document.getElementById('communityCards');
+
+    // Game State (very basic)
+    let currentPlayerName = '';
+    let currentRoomCode = '';
+    let playerChips = 1000; // Starting chips
+    let currentPot = 0;
+    let currentBet = 0;
+    let gameRound = 'Pre-flop';
+    const MAX_PLAYERS = 6;
+    const players = []; // Array to hold player objects {name, chips, cards, seatId, isActive, isDealer}
+    const deck = [];
+    const communityCards = []; // Will hold card objects {rank, suit, str}
+
+    const SUITS = ['♥', '♦', '♣', '♠'];
+    const RANKS = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+
+    // --- Setup and Game Start ---
+    function joinOrHostGame() {
+        currentPlayerName = playerNameInput.value.trim();
+        if (!currentPlayerName) {
+            alert("Please enter your poker name!");
+            return;
+        }
+
+        const roomCodeInputValue = roomCodeInput.value.trim();
+
+        if (roomCodeInputValue === "") {
+            // Host a new game
+            currentRoomCode = currentPlayerName.toUpperCase().substring(0, 5) + Math.floor(100 + Math.random() * 900);
+            roomCodeDisplay.textContent = currentRoomCode;
+            hostInfo.classList.remove('hidden');
+            connectionStatus.textContent = `Hosting Game: ${currentRoomCode} (Share this code!)`;
+            connectionStatus.className = 'connection-status status-host';
+            console.log(`${currentPlayerName} is hosting a new game. Code: ${currentRoomCode}`);
+            addPlayer(currentPlayerName, 1000, 0); // Host is player 0
+            players[0].isDealer = true; // Host is dealer initially
+        } else {
+            // Join an existing game (simulation)
+            currentRoomCode = roomCodeInputValue;
+            connectionStatus.textContent = `Attempting to join ${currentRoomCode}...`;
+            // Simulate successful connection for now
+            setTimeout(() => {
+                connectionStatus.textContent = `Connected to Room: ${currentRoomCode}`;
+                connectionStatus.className = 'connection-status status-connected';
+                console.log(`${currentPlayerName} is joining room: ${currentRoomCode}`);
+                // In a real app, you'd verify the room and add player via server
+                 addPlayer(currentPlayerName, 1000, players.length); // Add new player
+            }, 1000);
+        }
+
+        setupPanel.classList.add('hidden');
+        gameArea.classList.remove('hidden');
+        updatePlayerChipsDisplay();
+        updateGameInfoDisplays();
+        renderPlayerSeats();
+        // startGame(); // Uncomment to auto-start a game round
+    }
+    
+    function addPlayer(name, chips, seatIndex) {
+        if (players.length < MAX_PLAYERS) {
+            const newPlayer = {
+                name: name,
+                chips: chips,
+                cards: [], // [card1, card2]
+                seatId: `player-seat-${seatIndex}`, // Corresponds to HTML div IDs
+                isActive: true, // Player is in the current hand
+                isDealer: false,
+                currentBetInRound: 0,
+                hasActedThisBettingRound: false,
+                isFolded: false,
+            };
+            players[seatIndex] = newPlayer; // Assign to specific seat index
+            console.log(`Player ${name} added to seat ${seatIndex}`);
+            updatePlayerList();
+        } else {
+            console.log("Max players reached. Cannot add more.");
+            alert("Room is full!"); // Or send a message to player
+        }
+    }
+
+    function updatePlayerList() {
+        const playerListContainer = document.getElementById('playerListContainer');
+        if (!playerListContainer) return;
+        playerListContainer.innerHTML = ''; // Clear existing list
+        players.forEach(player => {
+            if (player) { // Check if player object exists at this index
+                const item = document.createElement('div');
+                item.className = 'player-item';
+                item.innerHTML = `<span class="player-name">${player.name}</span> <span class="player-chips">$${player.chips}</span>`;
+                playerListContainer.appendChild(item);
+            }
+        });
+        if (players.filter(p => p).length === 0) {
+             playerListContainer.innerHTML = `<div class="player-item"><span class="player-name">Waiting for players...</span></div>`;
+        }
+    }
+
+
+    // --- Help Modal ---
+    function showHelp() {
+        if (helpModal) {
+            helpModal.classList.remove('hidden');
+        }
+    }
+
+    function hideHelp() {
+        if (helpModal) {
+            helpModal.classList.add('hidden');
+        }
+    }
+
+    // --- Bet Slider ---
+    if (betSlider && betAmountDisplay) {
+        betSlider.oninput = function() {
+            betAmountDisplay.textContent = '$' + this.value;
+        }
+        // Initialize display
+        betAmountDisplay.textContent = '$' + betSlider.value;
+
+        // Set slider max based on player chips (if needed, or a game max)
+        // betSlider.max = playerChips; // Update this dynamically
+    }
+    
+    function updatePlayerChipsDisplay() {
+        const mainPlayer = players.find(p => p && p.name === currentPlayerName);
+        if (mainPlayer) {
+            playerChipsDisplay.textContent = `$${mainPlayer.chips}`;
+            betSlider.max = mainPlayer.chips; // Update slider max to current player's chips
+            if (parseInt(betSlider.value) > mainPlayer.chips) {
+                betSlider.value = mainPlayer.chips;
+                betAmountDisplay.textContent = `$${betSlider.value}`;
+            }
+        } else {
+             playerChipsDisplay.textContent = `$0`; // Or find the host player chips
+        }
+    }
+
+    function updateGameInfoDisplays() {
+        potAmountDisplay.textContent = `$${currentPot}`;
+        currentBetDisplay.textContent = `$${currentBet}`; // This is the highest bet to call
+        gameRoundDisplay.textContent = gameRound;
+    }
+
+
+    // --- Placeholder Game Actions ---
+    function fold() {
+        console.log(currentPlayerName + " folds.");
+        addChatMessage("System", `${currentPlayerName} folds.`);
+        // Actual fold logic: mark player as folded, advance turn, check end of round/hand
+    }
+
+    function checkCall() {
+        const amountToCall = currentBet - (players.find(p=>p.name === currentPlayerName)?.currentBetInRound || 0);
+        if (amountToCall === 0) {
+            console.log(currentPlayerName + " checks.");
+            addChatMessage("System", `${currentPlayerName} checks.`);
+        } else {
+            console.log(currentPlayerName + " calls $" + amountToCall);
+            addChatMessage("System", `${currentPlayerName} calls $${amountToCall}.`);
+            // Actual call logic: deduct chips, add to pot, update currentBetInRound for player
+        }
+        // Advance turn, check end of betting round
+    }
+
+    function raise() {
+        const raiseAmount = parseInt(betSlider.value);
+        if (raiseAmount <= currentBet) {
+            alert("Raise amount must be greater than the current bet.");
+            return;
+        }
+        console.log(currentPlayerName + " raises to $" + raiseAmount);
+        addChatMessage("System", `${currentPlayerName} raises to $${raiseAmount}.`);
+        // Actual raise logic: deduct chips, add to pot, update currentBet and player's currentBetInRound
+        // All other players need to act again.
+    }
+
+    function allIn() {
+        const mainPlayer = players.find(p => p && p.name === currentPlayerName);
+        if (mainPlayer) {
+            console.log(currentPlayerName + " goes ALL IN with $" + mainPlayer.chips);
+            addChatMessage("System", `${currentPlayerName} goes ALL IN with $${mainPlayer.chips}!`);
+            // Actual all-in logic
+        }
+    }
+
+    // --- Chat ---
+    function sendChatMessage() {
+        const messageText = chatInput.value.trim();
+        if (messageText && currentPlayerName) {
+            addChatMessage(currentPlayerName, messageText);
+            chatInput.value = ''; // Clear input
+            // In a real app, send this message to a server
+        }
+    }
+
+    function addChatMessage(sender, text) {
+        const messageElement = document.createElement('div');
+        messageElement.classList.add('chat-message');
+        
+        const senderSpan = document.createElement('span');
+        senderSpan.classList.add('sender');
+        senderSpan.textContent = sender + (sender === "System" ? ":" : ":");
+        
+        const textSpan = document.createElement('span');
+        textSpan.classList.add('text');
+        textSpan.textContent = " " + text;
+
+        messageElement.appendChild(senderSpan);
+        messageElement.appendChild(textSpan);
+        
+        chatMessages.appendChild(messageElement);
+        chatMessages.scrollTop = chatMessages.scrollHeight; // Scroll to bottom
+    }
+     // Allow sending chat message with Enter key
+    if (chatInput) {
+        chatInput.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault(); // Prevent default form submission if it were in a form
+                sendChatMessage();
+            }
+        });
+    }
+
+    // --- Card and Deck Logic (Basic) ---
+    function createDeck() {
+        deck.length = 0; // Clear existing deck
+        for (const suit of SUITS) {
+            for (const rank of RANKS) {
+                deck.push({ rank, suit, str: `${rank}${suit}` });
+            }
+        }
+    }
+
+    function shuffleDeck() {
+        for (let i = deck.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [deck[i], deck[j]] = [deck[j], deck[i]]; // Swap
+        }
+    }
+
+    function dealCard() {
+        return deck.pop(); // Take card from top of shuffled deck
+    }
+
+    // --- Rendering ---
+    function createCardElement(card, isBack = false) {
+        const cardDiv = document.createElement('div');
+        cardDiv.classList.add('card');
+        if (isBack) {
+            cardDiv.classList.add('card-back');
+            cardDiv.innerHTML = '<div class="card-design"></div>'; // Simple design for back
+        } else if (card) {
+            cardDiv.classList.add((card.suit === '♥' || card.suit === '♦') ? 'red' : 'black');
+            
+            const rankSpan = document.createElement('span');
+            rankSpan.classList.add('rank');
+            rankSpan.textContent = card.rank;
+
+            const suitSpan = document.createElement('span');
+            suitSpan.classList.add('suit');
+            suitSpan.textContent = card.suit;
+            
+            const topLeft = document.createElement('div');
+            topLeft.classList.add('top-left');
+            topLeft.appendChild(rankSpan.cloneNode(true));
+            topLeft.appendChild(document.createElement('br'));
+            topLeft.appendChild(suitSpan.cloneNode(true));
+
+            const bottomRight = document.createElement('div');
+            bottomRight.classList.add('bottom-right');
+            bottomRight.appendChild(rankSpan.cloneNode(true));
+            bottomRight.appendChild(document.createElement('br'));
+            bottomRight.appendChild(suitSpan.cloneNode(true));
+
+            cardDiv.appendChild(topLeft);
+            // Main suit in center (optional, for more detailed card)
+            // const centerSuit = suitSpan.cloneNode(true);
+            // centerSuit.style.fontSize = '36px'; // Larger center suit
+            // cardDiv.appendChild(centerSuit);
+            cardDiv.appendChild(bottomRight);
+        } else {
+             // Empty placeholder card if no card data
+            cardDiv.innerHTML = ''; // Or some placeholder text/icon
+        }
+        return cardDiv;
+    }
+
+    function renderPlayerSeats() {
+        if (!playerSeatsContainer) return;
+        // playerSeatsContainer.innerHTML = ''; // Clear previous seats if dynamically generating all
+
+        for (let i = 0; i < MAX_PLAYERS; i++) {
+            const seatDiv = document.getElementById(`player-seat-${i}`) || document.createElement('div');
+            if (!document.getElementById(`player-seat-${i}`)) { // If seat doesn't exist, create and append
+                 seatDiv.id = `player-seat-${i}`;
+                 seatDiv.classList.add('player-seat', `seat-${i + 1}`); // seat-1 to seat-6
+                 playerSeatsContainer.appendChild(seatDiv);
+            }
+            seatDiv.innerHTML = ''; // Clear previous content
+
+            const player = players[i];
+
+            if (player && player.isActive) {
+                const playerInfoDiv = document.createElement('div');
+                playerInfoDiv.classList.add('player-info');
+                playerInfoDiv.innerHTML = `
+                    <div class="player-name">${player.name} ${player.isDealer ? '(D)' : ''}</div>
+                    <div class="player-chips">$${player.chips}</div>
+                `;
+                seatDiv.appendChild(playerInfoDiv);
+
+                const playerCardsDiv = document.createElement('div');
+                playerCardsDiv.classList.add('player-cards');
+                if (player.cards && player.cards.length === 2) {
+                    // Show actual cards if it's this player, or at showdown
+                    // For now, always show back if not current player (or implement reveal logic)
+                    const showPlayerCards = (player.name === currentPlayerName); // Simple rule: show only my cards
+                    playerCardsDiv.appendChild(createCardElement(player.cards[0], !showPlayerCards));
+                    playerCardsDiv.appendChild(createCardElement(player.cards[1], !showPlayerCards));
+                } else { // dealt or not
+                    playerCardsDiv.appendChild(createCardElement(null, true));
+                    playerCardsDiv.appendChild(createCardElement(null, true));
+                }
+                seatDiv.appendChild(playerCardsDiv);
+                
+                if (player.name === currentPlayerName) seatDiv.classList.add('active'); // Highlight current player's seat
+                else seatDiv.classList.remove('active');
+
+                if (player.isDealer) seatDiv.classList.add('dealer');
+                else seatDiv.classList.remove('dealer');
+
+            } else { // Seat is open or player folded
+                seatDiv.innerHTML = `
+                    <div class="player-info">
+                        <div class="player-name">Seat Open</div>
+                        <div class="player-chips"></div>
+                    </div>
+                    <div class="player-cards"></div>`;
+                seatDiv.classList.remove('active', 'dealer');
+            }
+        }
+    }
+
+    function renderCommunityCards() {
+        if (!communityCardsContainer) return;
+        communityCardsContainer.innerHTML = ''; // Clear previous
+        for (let i = 0; i < 5; i++) {
+            if (communityCards[i]) {
+                communityCardsContainer.appendChild(createCardElement(communityCards[i]));
+            } else {
+                // Placeholder for un-dealt community cards
+                const placeholderCard = document.createElement('div');
+                placeholderCard.classList.add('card'); // Use card class for sizing
+                placeholderCard.style.background = "rgba(255,255,255,0.1)"; // Make it look like an empty slot
+                placeholderCard.style.border = "2px dashed rgba(255,255,255,0.2)";
+                communityCardsContainer.appendChild(placeholderCard);
+            }
+        }
+    }
+    
+    // --- Game Flow (Very Simplified) ---
+    function startGame() { // Call this to start a new hand/round
+        if (players.filter(p => p && p.isActive).length < 2) {
+            addChatMessage("System", "Need at least 2 players to start the game.");
+            console.log("Need at least 2 players.");
+            return;
+        }
+        addChatMessage("System", "New hand starting...");
+        currentPot = 0;
+        currentBet = 0; // Or small/big blind
+        gameRound = 'Pre-flop';
+        communityCards.length = 0; // Clear board
+
+        players.forEach(p => {
+            if (p) {
+                p.cards = [];
+                p.currentBetInRound = 0;
+                p.hasActedThisBettingRound = false;
+                p.isFolded = false;
+                // Deduct blinds here if implementing blinds
+            }
+        });
+
+        createDeck();
+        shuffleDeck();
+
+        // Deal hole cards
+        players.forEach(p => {
+            if (p && p.isActive) {
+                p.cards.push(dealCard());
+                p.cards.push(dealCard());
+            }
+        });
+        
+        addChatMessage("System", "Hole cards dealt. Pre-flop betting begins.");
+        console.log("Hole cards dealt:", players.map(p => p ? {name: p.name, cards: p.cards.map(c=>c.str)} : null ));
+
+        updateGameInfoDisplays();
+        renderPlayerSeats();
+        renderCommunityCards(); // Will show empty placeholders
+        // Start betting round logic here
+    }
+
+    // Example of how to proceed to flop (simplified, no betting logic yet)
+    function dealFlop() {
+        if (gameRound !== 'Pre-flop') return;
+        gameRound = 'Flop';
+        communityCards.push(dealCard()); // Burn one first in real poker
+        communityCards.push(dealCard());
+        communityCards.push(dealCard());
+        addChatMessage("System", "Flop is out. Betting round.");
+        console.log("Flop:", communityCards.map(c=>c.str));
+        updateGameInfoDisplays();
+        renderCommunityCards();
+    }
+    // ... dealTurn(), dealRiver() would be similar
+
+
+    // Initial setup on page load
+    document.addEventListener('DOMContentLoaded', () => {
+        // Update displays if needed (though game hasn't started)
+        updatePlayerChipsDisplay(); // Will be $1000 for host initially
+        updateGameInfoDisplays();
+        renderPlayerSeats(); // Render initial empty/open seats
+        renderCommunityCards(); // Render empty community card slots
+        updatePlayerList(); // Show waiting for players
+
+        // Example: Auto-start game if host and enough players after a delay (for demo)
+        // setTimeout(() => {
+        //    if (currentRoomCode && players.length > 0 && players[0].name === currentPlayerName) {
+        //        startGame();
+        //    }
+        // }, 3000); // Give time for "joining"
+    });
+
+
+</script>
+</body>
+</html>
